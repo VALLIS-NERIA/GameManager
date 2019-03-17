@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Game Manager</string>
+    <string name="label_Name">Name</string>
+    <string name="label_Price">Price</string>
+    <string name="label_Date">Date</string>
+    <string name="label_Desc">Description</string>
+    <string name="label_DLC_s">DLC(s)</string>
+    <string name="title_listGame">Game List</string>
+    <string name="title_template_gameDetail">Detail: "%s"</string>
+    <string name="title_template_dlcDetail">DLC：%s</string>
+    <string name="title_template_listDlc">DLC List of "%s"</string>
+    <string name="default_gameName">Devotion</string>
+    <string name="default_gameDesc">Devotion is a first-person atmospheric horror game depicting the life of a family shadowed by religious belief. Explore a 1980s Taiwan apartment complex lost in time gradually shift into a hellish nightmare. Delve into the vows each member of the family has made, and witness their devotion.</string>
+    <string name="default_dlcName">Sample DLC Name</string>
+    <string name="default_dlcDesc">Sample DLC Description abcdefghijklmnopqrstuvwxyz0123456789</string>
+    <string name="info_template_listCount">%d items.</string>
+    <string name="hint_title">Alert</string>
+    <string name="hint_deleteConfirm">Are you sure to delete this item?</string>
+    <string name="button_yes">Yes</string>
+    <string name="button_no">Nope</string>
+    <string name="no_desc">No description</string>
+</resources>

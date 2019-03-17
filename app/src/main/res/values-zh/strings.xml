@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">游戏管理器</string>
+    <string name="label_Name">名称</string>
+    <string name="label_Price">价格</string>
+    <string name="label_Date">日期</string>
+    <string name="label_Desc">简介</string>
+    <string name="label_DLC_s">DLC</string>
+    <string name="title_listGame">游戏列表</string>
+    <string name="title_template_gameDetail">游戏详情：《%s》</string>
+    <string name="title_template_dlcDetail">DLC：%s</string>
+    <string name="title_template_listDlc">《%s》的DLC</string>
+    <string name="default_gameName">还愿</string>
+    <string name="default_gameDesc">《还愿》是一款叙事型的心灵恐怖游戏，背景设定在1980年代台湾，述说在这块信仰与生活密切连结的土壤上，一户三口之家在老公寓中曾有的日常光景，以及一些难以抹灭的回忆。</string>
+    <string name="default_dlcName">何老师必须死</string>
+    <string name="default_dlcDesc">治病千万条，医院第一条；信仰不规范，亲人两行泪。请远离邪教和地下教会。</string>
+    <string name="info_template_listCount">共计%d个条目</string>
+    <string name="hint_deleteConfirm">你确定要删除该项目吗？</string>
+    <string name="button_yes">确定</string>
+    <string name="button_no">再想想</string>
+    <string name="hint_title">提示</string>
+    <string name="no_desc">没有描述</string>
+</resources>

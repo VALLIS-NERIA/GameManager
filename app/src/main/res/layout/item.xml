@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:my="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
+            <TextView
+                android:id="@+id/itemView_name"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="CS:GO"
+                android:textColor="@color/colorText"
+                android:textSize="12pt" />
+                <gg.my.gamemanager.DrawImageView
+                    android:id="@+id/itemView_image"
+                    android:layout_width="32dp"
+                    android:layout_height="match_parent"
+                    android:shadowColor="@color/colorText" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/itemView_Desc"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="反恐精英：全球血崩"
+                android:gravity="bottom"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:textSize="8pt" />
+    </LinearLayout>
+
+</LinearLayout>
