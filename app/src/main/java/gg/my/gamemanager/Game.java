@@ -22,12 +22,14 @@ class Game implements Serializable {
     private static final String FIELD_PRICE = "price";
     private static final String FIELD_DATE = "date";
     private static final String FIELD_DLC = "dlcs";
+    private static final String FIELD_HOUR = "hours";
     private static DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
     private String name;
     private String description;
     private Float price;
     private Calendar date;
+    private int hours;
     private List<DlcInfo> dlcs;
 
     public Game() {
@@ -35,6 +37,7 @@ class Game implements Serializable {
         this.name = "";
         this.description = "";
         this.price = 0f;
+        this.hours = 0;
         this.dlcs = new ArrayList<>();
     }
 
@@ -46,6 +49,7 @@ class Game implements Serializable {
         g.name = jobj.getString(FIELD_NAME);
         g.description = jobj.getString(FIELD_DESC);
         g.price = (float) jobj.getDouble(FIELD_PRICE);
+        g.hours = jobj.getInt(FIELD_HOUR);
         try {
             g.date.setTime(df.parse(jobj.getString(FIELD_DATE)));
         } catch (ParseException e) {
@@ -71,6 +75,7 @@ class Game implements Serializable {
             obj.put(FIELD_DESC, this.description);
             obj.put(FIELD_PRICE, (double) this.price);
             obj.put(FIELD_DATE, df.format(this.date.getTime()));
+            obj.put(FIELD_HOUR,hours);
 
             JSONArray arr = new JSONArray();
             for (DlcInfo d : this.dlcs) {
@@ -131,6 +136,14 @@ class Game implements Serializable {
 
     public void setDlcs(List<DlcInfo> dlcs) {
         this.dlcs = dlcs;
+    }
+
+    public void setHours(int hour){
+        this.hours += Math.abs(hour);
+    }
+
+    public int getHours() {
+        return hours;
     }
 
     public void removeDlc(DlcInfo dlc) {

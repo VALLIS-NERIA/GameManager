@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import java.util.Calendar;
 import java.util.Locale;
@@ -36,11 +37,15 @@ public class GameDetailActivity extends AppCompatActivity {
     private Button dateButton;
     private Button dlcButton;
     private EditText descEdit;
+    private TextView screenHour;
+    private EditText buttonHour;
 
     private FloatingActionButton buttonEdit;
     private FloatingActionButton buttonSave;
     private FloatingActionButton buttonCancel;
     private FloatingActionButton buttonDel;
+
+
 
     private Game currentGame;
     private Boolean isNewGame;
@@ -78,6 +83,8 @@ public class GameDetailActivity extends AppCompatActivity {
         buttonSave = findViewById(R.id.detail_fabSave);
         buttonCancel = findViewById(R.id.detail_fabCancel);
         buttonDel = findViewById(R.id.detail_fabDel);
+        buttonHour = findViewById(R.id.detail_gamehour);
+        screenHour = findViewById(R.id.detial_screenGamehours);
         dateButton.setOnClickListener(this::clickDate);
         dlcButton.setOnClickListener(this::clickDlc);
         isNewGame = type.equals(TYPE_ADD_GAME);
@@ -105,11 +112,13 @@ public class GameDetailActivity extends AppCompatActivity {
 
             }
         });
+        screenHour.setText(currentGame.getHours() + R.string.hours);
         priceEdit.setText(String.format(loc, "%.2f", currentGame.getPrice()));
         dateButton.setText(formatDate(currentGame.getDate()));
         descEdit.setText(currentGame.getDescription());
         dlcButton.setText(String.format(loc, "%d", currentGame.getDlcs().size()));
         if (editMode) {
+            buttonHour.setEnabled(true);
             nameEdit.setEnabled(true);
             priceEdit.setEnabled(true);
             dateButton.setEnabled(true);
@@ -125,6 +134,7 @@ public class GameDetailActivity extends AppCompatActivity {
             buttonCancel.setOnClickListener(this::clickCancel);
             buttonDel.setOnClickListener(this::clickDelete);
         } else {
+            buttonHour.setEnabled(false);
             nameEdit.setEnabled(false);
             priceEdit.setEnabled(false);
             dateButton.setEnabled(false);
@@ -184,6 +194,10 @@ public class GameDetailActivity extends AppCompatActivity {
         datePicker.show();
     }
 
+    private void clickHours(View view){
+
+    }
+
     // after I pick a date in the date picker dialog
     private void pickedDate(DatePicker v, int year, int monthOfYear, int dayOfMonth) {
         Calendar picked = Calendar.getInstance();
@@ -220,6 +234,7 @@ public class GameDetailActivity extends AppCompatActivity {
         currentGame.setName(nameEdit.getText().toString());
         currentGame.setDescription(descEdit.getText().toString());
         currentGame.setPrice(Float.parseFloat(priceEdit.getText().toString()));
+        currentGame.setHours(Integer.parseInt(buttonHour.getText().toString()));
         if (selectedDate != null) {
             currentGame.setDate(selectedDate);
         }

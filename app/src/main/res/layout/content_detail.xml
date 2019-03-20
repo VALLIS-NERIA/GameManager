@@ -11,8 +11,9 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="387dp"
         android:orientation="vertical">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -55,13 +56,15 @@
                 android:layout_weight="1"
                 android:inputType="number"
                 android:text="30"
-                android:textSize="8pt"/>
+                android:textSize="8pt" />
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:weightSum="4">
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -78,7 +81,6 @@
                 android:textSize="8pt" />
 
         </LinearLayout>
-
 
 
         <LinearLayout
@@ -115,7 +117,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/label_Desc"
-            android:textSize="10pt"/>
+            android:textSize="10pt" />
 
 
         <EditText
@@ -126,6 +128,37 @@
             android:text="CS:GO is the latest version of the well-known FPS game Counter-Strike."
             android:textSize="7pt" />
 
+        <View
+            android:id="@+id/divider2"
+            android:layout_width="379dp"
+            android:layout_height="5dp"
+            android:background="?android:attr/listDivider"
+            tools:layout_editor_absoluteX="8dp"
+            tools:layout_editor_absoluteY="296dp" />
+
+        <EditText
+            android:id="@+id/detail_gamehour"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/gamehoursphint"
+            android:inputType="number"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/detial_screenGamehours"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:gravity="center"
+            android:textSize="25pt" />
     </LinearLayout>
+
 
 </android.support.constraint.ConstraintLayout>
