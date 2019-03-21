@@ -9,16 +9,17 @@
     <string name="title_template_gameDetail">游戏详情：《%s》</string>
     <string name="title_template_dlcDetail">DLC：%s</string>
     <string name="title_template_listDlc">《%s》的DLC</string>
-    <string name="default_gameName">还愿</string>
-    <string name="default_gameDesc">《还愿》是一款叙事型的心灵恐怖游戏，背景设定在1980年代台湾，述说在这块信仰与生活密切连结的土壤上，一户三口之家在老公寓中曾有的日常光景，以及一些难以抹灭的回忆。</string>
-    <string name="default_dlcName">何老师必须死</string>
-    <string name="default_dlcDesc">治病千万条，医院第一条；信仰不规范，亲人两行泪。请远离邪教和地下教会。</string>
+    <string name="default_gameName">层层恐惧</string>
+    <string name="default_gameDesc">Layers of Fear 是一款第一人称迷幻恐怖游戏，主要着重于故事和探索。玩家将控制一位画家，其唯一的目的就是要完成他的巨作。 一栋变化无常的维多利亚时代宅邸、画家破碎不堪精神世界的恐怖幻象，玩家必须在这二者之间游走。</string>
+    <string name="default_dlcName">层层恐惧：遗产</string>
+    <string name="default_dlcDesc">恐惧层：继承扩展了恐惧层的情节，并讲述了画家的女儿的故事，她回到童年的家中面对她的过去。她可以原谅她的父亲，还是会对所发生的一切感到不满？重温她的经历，见证吞噬家庭的悲剧的全部范围。 引导女儿穿过豪宅的左边，并参与她父亲给予全家的疯狂。面对她过去的记忆，塑造她们等待着她的命运。</string>
     <string name="info_template_listCount">共计%d个条目</string>
     <string name="hint_deleteConfirm">你确定要删除该项目吗？</string>
     <string name="button_yes">确定</string>
     <string name="button_no">再想想</string>
     <string name="hint_title">提示</string>
     <string name="no_desc">没有描述</string>
-    <string name="gamehoursphint">"已经游玩了 "</string>
-    <string name="hours">小时</string>
+    <string name="gamehoursphint">"今天我玩了 "</string>
+    <string name="hours">已运行</string>
+    <string name="Hours">小时</string>
 </resources>

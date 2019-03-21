@@ -112,7 +112,7 @@ public class GameDetailActivity extends AppCompatActivity {
 
             }
         });
-        screenHour.setText(currentGame.getHours() + R.string.hours);
+        screenHour.setText(getString(R.string.hours) + " "+ String.format(loc, "%d", currentGame.getHours())  + " " + getString(R.string.Hours));
         priceEdit.setText(String.format(loc, "%.2f", currentGame.getPrice()));
         dateButton.setText(formatDate(currentGame.getDate()));
         descEdit.setText(currentGame.getDescription());
@@ -234,7 +234,11 @@ public class GameDetailActivity extends AppCompatActivity {
         currentGame.setName(nameEdit.getText().toString());
         currentGame.setDescription(descEdit.getText().toString());
         currentGame.setPrice(Float.parseFloat(priceEdit.getText().toString()));
-        currentGame.setHours(Integer.parseInt(buttonHour.getText().toString()));
+        try {
+            currentGame.setHours(Integer.parseInt(buttonHour.getText().toString()));
+        }
+        catch(NumberFormatException e){
+        }
         if (selectedDate != null) {
             currentGame.setDate(selectedDate);
         }

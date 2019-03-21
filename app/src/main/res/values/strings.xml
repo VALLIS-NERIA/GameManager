@@ -9,10 +9,11 @@
     <string name="title_template_gameDetail">Detail: "%s"</string>
     <string name="title_template_dlcDetail">DLC：%s</string>
     <string name="title_template_listDlc">DLC List of "%s"</string>
-    <string name="default_gameName">Devotion</string>
-    <string name="default_gameDesc">Devotion is a first-person atmospheric horror game depicting the life of a family shadowed by religious belief. Explore a 1980s Taiwan apartment complex lost in time gradually shift into a hellish nightmare. Delve into the vows each member of the family has made, and witness their devotion.</string>
-    <string name="default_dlcName">Sample DLC Name</string>
-    <string name="default_dlcDesc">Sample DLC Description abcdefghijklmnopqrstuvwxyz0123456789</string>
+    <string name="default_gameName">Layers of fear</string>
+    <string name="default_gameDesc">Layers of Fear is a first-person psychedelic horror game with a heavy focus on story and exploration. Players take control of a painter whose sole purpose is to finish his Magnum Opus.</string>
+    <string name="default_dlcName">Layers of Fear: Inheritance</string>
+    <string name="default_dlcDesc">Layers of Fear: Inheritance expands the plot from Layers of Fear and tells the story of the painter’s daughter, who comes back to her childhood home to face her past. Can she forgive her father, or will she resent all that has happened? Relive her experiences and witness the full scope of the tragedy that has swallowed up the family.
+Lead the daughter through what’s left of the mansion and take part in the madness that her father bestowed upon the whole family. Face the memories of her past and shape them into the destiny that awaits her. </string>
     <string name="info_template_listCount">%d items.</string>
     <string name="hint_title">Alert</string>
     <string name="hint_deleteConfirm">Are you sure to delete this item?</string>
@@ -20,5 +21,7 @@
     <string name="button_no">Nope</string>
     <string name="no_desc">No description</string>
     <string name="gamehoursphint">How many hours did you play today?</string>
-    <string name="hours">HOURS</string>
+    <string name="hours">You\'ve played </string>
+    <string name="Hours"> Hours</string>
+
 </resources>

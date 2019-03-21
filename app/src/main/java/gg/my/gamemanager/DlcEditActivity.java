@@ -60,7 +60,6 @@ public class DlcEditActivity extends AppCompatActivity {
         fabCancel = findViewById(R.id.dlc_fabCancel);
         fabDelete = findViewById(R.id.dlc_fabDel);
         fabEdit = findViewById(R.id.detail_fabEdit2);
-        fabEdit.setOnClickListener(this::clickEdit);
         //fabEdit.setImageResource(android.R.drawable.ic_menu_edit);
         getSupportActionBar().setTitle(String.format(getString(R.string.title_template_dlcDetail), info.getName()));
 
@@ -89,8 +88,7 @@ public class DlcEditActivity extends AppCompatActivity {
 
         if(dlcEditMode) {
             fabEdit.setEnabled(false);
-            fabEdit.setVisibility(View.INVISIBLE);
-            fabEdit.setVisibility(View.VISIBLE);
+            fabEdit.setVisibility(View.GONE);
             fabCancel.setVisibility(View.VISIBLE);
             fabSave.setVisibility(View.VISIBLE);
             fabDelete.setVisibility(View.VISIBLE);
@@ -113,6 +111,7 @@ public class DlcEditActivity extends AppCompatActivity {
             fabCancel.setVisibility(View.GONE);
             fabDelete.setVisibility(View.GONE);
             fabSave.setVisibility(View.GONE);
+            fabEdit.setOnClickListener(this::clickEdit);
             fabSave.setOnClickListener(this::clickSave);
             fabCancel.setOnClickListener(this::clickCancel);
             fabDelete.setOnClickListener(this::clickDelete);

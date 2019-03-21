@@ -332,7 +332,7 @@ public class ListActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    // returns a sample game named "Devotion".
+    // returns a sample game named "Layers of fear".
     private Game getSampleGame() {
         Game sampleGame = new Game();
         sampleGame.setName(getString(R.string.default_gameName));
