@@ -108,6 +108,8 @@ public class DlcEditActivity extends AppCompatActivity {
             fabCancel.setEnabled(false);
             fabDelete.setEnabled(false);
             fabSave.setEnabled(false);
+            fabEdit.setEnabled(true);
+            fabEdit.setVisibility(View.VISIBLE);
             fabCancel.setVisibility(View.GONE);
             fabDelete.setVisibility(View.GONE);
             fabSave.setVisibility(View.GONE);
@@ -131,9 +133,12 @@ public class DlcEditActivity extends AppCompatActivity {
     }
 
     private void clickCancel(View view) {
-        Intent intent = new Intent();
+        this.dlcEditMode = false;
+        this.initview();
+
+        /**Intent intent = new Intent();
         setResult(RESULT_CANCELED, intent);
-        finish();
+        finish();*/
     }
 
     private void clickEdit(View view){

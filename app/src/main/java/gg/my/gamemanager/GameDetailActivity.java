@@ -96,6 +96,8 @@ public class GameDetailActivity extends AppCompatActivity {
         loc = Locale.getDefault();
         getSupportActionBar().setTitle(String.format(getString(R.string.title_template_gameDetail), currentGame.getName()));
         nameEdit.setText(currentGame.getName());
+        //当名字改变时，显示效果跟随其改变
+        //Name will be updated when it has been changed.
         nameEdit.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -129,6 +131,7 @@ public class GameDetailActivity extends AppCompatActivity {
             buttonCancel.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
             buttonCancel.setOnClickListener(this::clickCancel);
             buttonSave.setVisibility(View.VISIBLE);
+            buttonSave.setImageResource(android.R.drawable.ic_menu_save );
             if (!isNewGame) buttonDel.setVisibility(View.VISIBLE);
             buttonSave.setOnClickListener(this::clickSave);
             buttonCancel.setOnClickListener(this::clickCancel);
@@ -166,6 +169,7 @@ public class GameDetailActivity extends AppCompatActivity {
                     dlcDirty = true;
                     buttonSave.setVisibility(View.VISIBLE);
                     buttonSave.setOnClickListener(this::clickSave);
+                    buttonSave.setImageResource(android.R.drawable.ic_menu_save);
                     buttonCancel.setVisibility(View.GONE);
                 }
                 break;
@@ -192,10 +196,6 @@ public class GameDetailActivity extends AppCompatActivity {
                 current.get(Calendar.DAY_OF_MONTH));
 
         datePicker.show();
-    }
-
-    private void clickHours(View view){
-
     }
 
     // after I pick a date in the date picker dialog
@@ -249,6 +249,43 @@ public class GameDetailActivity extends AppCompatActivity {
         intent.putExtra(MSG_INDEX, gameIndex);
         setResult(RESULT_OK, intent);
         finish();
+    }
+
+    //when I click Back button instead of clicking custom button.
+    public void onBackPressed(){
+        if(dlcDirty)
+        {
+            currentGame.setName(nameEdit.getText().toString());
+            currentGame.setDescription(descEdit.getText().toString());
+            currentGame.setPrice(Float.parseFloat(priceEdit.getText().toString()));
+            try {
+                currentGame.setHours(Integer.parseInt(buttonHour.getText().toString()));
+            }
+            catch(NumberFormatException e){
+            }
+            if (selectedDate != null) {
+                currentGame.setDate(selectedDate);
+            }
+
+            // return to ListActivity
+            Intent intent = new Intent();
+            intent.putExtra(MSG_RETURN_DATA, currentGame);
+            intent.putExtra(MSG_INDEX, gameIndex);
+            setResult(RESULT_OK, intent);
+            finish();
+        }   else {
+            // if I'm editing a new game, just return
+            if (isNewGame || !editMode) {
+                Intent intent = new Intent();
+                setResult(RESULT_CANCELED, intent);
+                finish();
+            }
+            // otherwise back to view mode
+            else {
+                editMode = false;
+                this.initViews();
+            }
+        }
     }
 
     // when I click on the cancel button

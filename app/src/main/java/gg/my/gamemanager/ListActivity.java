@@ -196,6 +196,7 @@ public class ListActivity extends AppCompatActivity {
                 // create a sample game list
                 this.games = new ArrayList<>();
                 this.games.add(getSampleGame());
+                this.games.add(getSampleGame2());
                 // create the json file
                 File dir = this.getFilesDir();
                 File file = new File(dir, "games.json");
@@ -314,6 +315,7 @@ public class ListActivity extends AppCompatActivity {
                         this.dlcs.remove(index);
                         dlcDirty = true;
                         this.updateAndSave();
+
                     }
                 }
                 break;
@@ -348,6 +350,17 @@ public class ListActivity extends AppCompatActivity {
         sampleDlc.setDescription(getString(R.string.default_dlcDesc));
         sampleGame.addDlc(sampleDlc);
         return sampleGame;
+    }
+    private Game getSampleGame2(){
+        Game sampleGame2 = new Game();
+        sampleGame2.setName(getString(R.string.default2_gameName));
+        sampleGame2.setDescription(getString(R.string.default2_gameDesc));
+        Calendar date = Calendar.getInstance();
+        date.set(Calendar.YEAR, 2014);
+        date.set(Calendar.MONTH, 1);
+        date.set(Calendar.DAY_OF_MONTH, 19);
+        sampleGame2.setDate(date);
+        return sampleGame2;
     }
 
     // when I click the "add" button under game mode,
@@ -393,7 +406,6 @@ public class ListActivity extends AppCompatActivity {
         startActivityForResult(intent, CODE_ADD_DLC);
     }
 
-
     //when I click on some existing Dlc under DLc mode
     //calls DlcEditActivity with request code CODE_VIEW_DLC
     private void clickViewDlc(int index){
@@ -405,19 +417,6 @@ public class ListActivity extends AppCompatActivity {
         intent.putExtra(MSG_ITEM,this.dlcs.get(index));
         intent.putExtra(MSG_INDEX,index);
         startActivityForResult(intent,CODE_VIEW_DLC);
-    }
-
-    // when I click on some existing DLC under DLC mode
-    // calls DlcEditActivity with request code CODE_EDIT_DLC
-    private void clickEditDlc(int index) {
-        if (!dlcMode) {
-            throw new AssertionError("should be DLC mode");
-        }
-        Intent intent = new Intent(this, DlcEditActivity.class);
-        intent.putExtra(REQUEST_TYPE, TYPE_EDIT_DLC);
-        intent.putExtra(MSG_ITEM, this.dlcs.get(index));
-        intent.putExtra(MSG_INDEX, index);
-        startActivityForResult(intent, CODE_EDIT_DLC);
     }
 
     // when I click the "back/save" button under DLC mode
@@ -435,8 +434,18 @@ public class ListActivity extends AppCompatActivity {
     }
     /* for recycler view */
 
-
-
+    //when I click Back button instead of clicking custom button.
+    public void onBackPressed(){
+        Intent intent = new Intent();
+        // if the DLC list is dirty, we return the current game (along with its DLCs)
+        if (dlcDirty) {
+            intent.putExtra(MSG_RETURN_DATA, currentGame);
+            setResult(RESULT_OK, intent);
+        } else {
+            setResult(RESULT_CANCELED, intent);
+        }
+        finish();
+    }
     // a simple divider in recycler view.
     private class MyDivider extends RecyclerView.ItemDecoration {
         private Paint paint;
