@@ -16,10 +16,10 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import gg.my.gamemanager.control.DatePickButton;
-import gg.my.gamemanager.control.DonutDrawView;
 import gg.my.gamemanager.control.Voter;
-import gg.my.gamemanager.model.Game;
-import gg.my.gamemanager.provider.RatingInfo;
+import gg.my.gamemanager.helpers.GameDataProvider;
+import gg.my.gamemanager.models.Game;
+import gg.my.gamemanager.helpers.RatingInfo;
 
 import static gg.my.gamemanager.ListActivity.CODE_LIST_DLC;
 import static gg.my.gamemanager.ListActivity.MSG_INDEX;
@@ -52,6 +52,7 @@ public class GameDetailActivity extends AppCompatActivity {
 
 
     private Game currentGame;
+    private Game backupGame;
     private Boolean isNewGame;
     private Boolean editMode;
     private Boolean dlcDirty;
@@ -75,8 +76,9 @@ public class GameDetailActivity extends AppCompatActivity {
         if (type == null || (!type.equals(TYPE_ADD_GAME) && !type.equals(ListActivity.TYPE_VIEW_GAME))) {
             throw new IllegalArgumentException("REQUEST_TYPE should be TYPE_ADD_GAME or TYPE_VIEW_GAME");
         }
-        currentGame = (Game) intent.getSerializableExtra(MSG_ITEM);
         gameIndex = intent.getIntExtra(MSG_INDEX, -1);
+        currentGame = GameDataProvider.games.get(gameIndex);
+        backupGame = currentGame.getClone();
 
         nameEdit = findViewById(R.id.detail_name_edit);
         priceEdit = findViewById(R.id.detail_price_edit);
@@ -91,7 +93,7 @@ public class GameDetailActivity extends AppCompatActivity {
         screenHour = findViewById(R.id.detial_screenGamehours);
         voter = findViewById(R.id.detail_voter);
 
-        voter.setOptions(RatingInfo.CreateFromGame(this.currentGame, this));
+        voter.setData(RatingInfo.CreateFromGame(this.currentGame, this));
 
         dlcButton.setOnClickListener(this::clickDlc);
         isNewGame = type.equals(TYPE_ADD_GAME);
@@ -270,6 +272,8 @@ public class GameDetailActivity extends AppCompatActivity {
         // if I'm editing a new game, just return
         if (isNewGame || !editMode) {
             Intent intent = new Intent();
+            // revert changes by replacing with backup
+            GameDataProvider.games.set(gameIndex, backupGame);
             setResult(RESULT_CANCELED, intent);
             finish();
         }

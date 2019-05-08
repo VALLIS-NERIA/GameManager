@@ -8,18 +8,15 @@ import android.graphics.Paint.Style;
 import android.support.annotation.ColorInt;
 import android.util.AttributeSet;
 
-import gg.my.gamemanager.R;
+import gg.my.gamemanager.helpers.RatingInfo;
 
 public class HistogramDrawView extends android.support.v7.widget.AppCompatImageView {
     private final Paint paint;
     private final Paint textPaint;
     private final Context context;
-    private int[] data;
-    @ColorInt
-    private int[] colors;
+    private RatingInfo[] data;
     private int total;
     private float density;
-    private int marginRightDp;
 
     public HistogramDrawView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -35,12 +32,11 @@ public class HistogramDrawView extends android.support.v7.widget.AppCompatImageV
         //marginRightDp = dp2px(12);
     }
 
-    public void setData(int[] data, @ColorInt int[] colors) {
+    public void setData(RatingInfo[] data) {
         this.data = data;
-        this.colors = colors;
         this.total = 0;
-        for (int i = 0; i < data.length; i++) {
-            this.total += data[i];
+        for (RatingInfo info : data) {
+            this.total += info.count;
         }
     }
 
@@ -55,11 +51,11 @@ public class HistogramDrawView extends android.support.v7.widget.AppCompatImageV
         int bottom = dp2px(8);
         int top = bottom + height;
 
-        for (int i = 0; i < this.data.length; i++) {
-            paint.setColor(colors[i]);
-            float right = getBarLength(this.data[i]);
+        for (RatingInfo info : this.data) {
+            paint.setColor(info.color);
+            float right = getBarLength(info.count);
             canvas.drawRect(0, top, right, bottom, this.paint);
-            canvas.drawText(Integer.toString(this.data[i]), right - dp2px(4),  top-dp2px(4), this.textPaint);
+            canvas.drawText(Integer.toString(info.count), right - dp2px(4), top - dp2px(4), this.textPaint);
             bottom = top + space;
             top = bottom + height;
         }
@@ -67,7 +63,7 @@ public class HistogramDrawView extends android.support.v7.widget.AppCompatImageV
     }
 
     private float getBarLength(int value) {
-        return (float) value / total * (getWidth() - dp2px(marginRightDp));
+        return (float) value / total * (getWidth());
     }
 
     private int dp2px(int dp) {

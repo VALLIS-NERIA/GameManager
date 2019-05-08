@@ -10,7 +10,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 
-import gg.my.gamemanager.model.DlcInfo;
+import gg.my.gamemanager.models.DlcInfo;
 
 import static gg.my.gamemanager.ListActivity.MSG_INDEX;
 import static gg.my.gamemanager.ListActivity.MSG_ITEM;

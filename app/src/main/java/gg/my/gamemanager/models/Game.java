@@ -1,4 +1,4 @@
-package gg.my.gamemanager.model;
+package gg.my.gamemanager.models;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,7 +16,7 @@ import java.util.List;
  * The game model class.
  */
 
-public class Game implements Serializable {
+public class Game {
     private static final String FIELD_NAME = "name";
     private static final String FIELD_DESC = "description";
     private static final String FIELD_PRICE = "price";
@@ -99,6 +99,23 @@ public class Game implements Serializable {
         } catch (JSONException e) {
             return null;
         }
+    }
+
+    public Game getClone(){
+        Game g = new Game();
+        g.date = (Calendar) this.date.clone();
+        g.name = this.name;
+        g.description = this.description;
+        g.price = this.price;
+        g.hours = this.hours;
+        g.dlcs = new ArrayList<>(this.dlcs);
+
+        return g;
+    }
+
+    @Override
+    public Object clone(){
+        return this.getClone();
     }
 
     public String getName() {

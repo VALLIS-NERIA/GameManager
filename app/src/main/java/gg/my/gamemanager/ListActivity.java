@@ -20,9 +20,9 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import gg.my.gamemanager.model.DlcInfo;
-import gg.my.gamemanager.model.Game;
-import gg.my.gamemanager.provider.GameDataProvider;
+import gg.my.gamemanager.models.DlcInfo;
+import gg.my.gamemanager.models.Game;
+import gg.my.gamemanager.helpers.GameDataProvider;
 
 
 // 这是一个复用的Activity，用来显示游戏列表或者DLC列表。app启动时默认进入ListActivity，并且显示游戏列表。
@@ -39,7 +39,7 @@ import gg.my.gamemanager.provider.GameDataProvider;
  * For cross-activity interactions there are 4 fields.
  * {@link ListActivity#REQUEST_TYPE}: (REQUIRED) determines the action type. {@see {@link ListActivity#TYPE_VIEW_GAME}}
  * {@link ListActivity#MSG_ITEM}: to set or get the passed {@link Game} or {@link DlcInfo}
- * {@link ListActivity#MSG_INDEX}: to set or get the index of passed item, in its original list({@link ListActivity#gameProvider} or {@link Game#dlcs})
+ * {@link ListActivity#MSG_INDEX}: to set or get the index of passed item, in its original list
  * {@link ListActivity#MSG_RETURN_DATA}: to set or get the {@link Game} or {@link DlcInfo} return by child activity
  * <p>
  * The value of {@link ListActivity#REQUEST_TYPE} should be one of following:
@@ -83,7 +83,6 @@ public class ListActivity extends AppCompatActivity {
     private FloatingActionButton fabNew;
 
     // used in game list mode
-    private GameDataProvider gameProvider;
 
     // used in DLC list mode
     private List<DlcInfo> dlcs;
@@ -119,7 +118,7 @@ public class ListActivity extends AppCompatActivity {
         }
         // type is null means Game mode
         else {
-            this.gameProvider = GameDataProvider.tryCreateInstance(this);
+            GameDataProvider.init(this);
             dlcMode = false;
         }
 
@@ -153,7 +152,7 @@ public class ListActivity extends AppCompatActivity {
         fabSave.setOnClickListener(this::clickSaveDlcs);
 
         listCount = this.findViewById(R.id.list_countText);
-        listCount.setText(String.format(getString(R.string.info_template_listCount), dlcMode ? this.dlcs.size() : this.gameProvider.games.size()));
+        listCount.setText(String.format(getString(R.string.info_template_listCount), dlcMode ? this.dlcs.size() : GameDataProvider.games.size()));
     }
 
     /**
@@ -164,10 +163,10 @@ public class ListActivity extends AppCompatActivity {
         if (this.dlcMode) {
             adapter = MyAdapter.ForDlcs(this.dlcs, this::clickViewDlc);
         } else {
-            adapter = MyAdapter.ForGames(this.gameProvider.games, this::clickViewGame);
+            adapter = MyAdapter.ForGames(GameDataProvider.games, this::clickViewGame);
         }
         recyclerView.setAdapter(adapter);
-        if (!dlcMode) this.gameProvider.save(this);
+        if (!dlcMode) GameDataProvider.save();
         fabSave.setImageResource(dlcDirty ? android.R.drawable.ic_menu_save : android.R.drawable.ic_menu_revert);
     }
 
@@ -180,30 +179,23 @@ public class ListActivity extends AppCompatActivity {
             // [GAMEmode] after I tap the "add" button to create a new Game
             case CODE_ADD_GAME:
                 if (resultCode == RESULT_OK) {
-                    // get the returned Game
-                    Game returnedGame = (Game) data.getSerializableExtra(MSG_RETURN_DATA);
-                    this.gameProvider.games.add(returnedGame);
                     this.updateAndSave();
+                } else {
+                    int index = data.getIntExtra(MSG_INDEX, -1);
+                    GameDataProvider.games.remove(index);
                 }
                 break;
             // [GAMEmode] after I tap on an existing Game to view/modify it.
             case CODE_VIEW_GAME:
                 // the game is modified.
                 if (resultCode == RESULT_OK) {
-                    Game returnedGame = (Game) data.getSerializableExtra(MSG_RETURN_DATA);
-                    int index = data.getIntExtra(MSG_INDEX, -1);
-                    if (returnedGame != null && index > -1) {
-                        this.gameProvider.games.set(index, returnedGame);
-                        this.updateAndSave();
-                    }
+                    this.updateAndSave();
                 }
                 // the game is deleted
                 else if (resultCode == RESULT_DELETED) {
                     int index = data.getIntExtra(MSG_INDEX, -1);
-                    if (index > -1) {
-                        this.gameProvider.games.remove(index);
-                        this.updateAndSave();
-                    }
+                    GameDataProvider.games.remove(index);
+                    this.updateAndSave();
                 }
                 break;
             // [DLCmode] after I tap on an existing DLC to edit it
@@ -254,10 +246,9 @@ public class ListActivity extends AppCompatActivity {
         Intent intent = new Intent(this, GameDetailActivity.class);
         // I don't know how to read request code in child activity, so had to put a string indicating the request type
         intent.putExtra(REQUEST_TYPE, TYPE_ADD_GAME);
-        // pass the Game instance. That's why Game and DlcInfo class implements Serializable interface.
-        intent.putExtra(MSG_ITEM, new Game());
+        GameDataProvider.games.add(new Game());
         // the index of the Game in gameList
-        intent.putExtra(MSG_INDEX, -1);
+        intent.putExtra(MSG_INDEX, GameDataProvider.games.size() - 1);
         // use request code so that onActivityResult can determine the child activity
         startActivityForResult(intent, CODE_ADD_GAME);
     }
@@ -270,7 +261,6 @@ public class ListActivity extends AppCompatActivity {
         }
         Intent intent = new Intent(ListActivity.this, GameDetailActivity.class);
         intent.putExtra(REQUEST_TYPE, TYPE_VIEW_GAME);
-        intent.putExtra(MSG_ITEM, this.gameProvider.games.get(index));
         intent.putExtra(MSG_INDEX, index);
         startActivityForResult(intent, CODE_VIEW_GAME);
     }

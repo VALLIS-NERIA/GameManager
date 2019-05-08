@@ -8,17 +8,15 @@ import android.graphics.Paint.Style;
 import android.support.annotation.ColorInt;
 import android.util.AttributeSet;
 
+import gg.my.gamemanager.helpers.RatingInfo;
+
 public class DonutDrawView extends android.support.v7.widget.AppCompatImageView {
     private final Paint paint;
     private final Paint textPaint;
     private final Context context;
-    private int[] data;
-    @ColorInt
-    private int[] colors;
-    private String[] labels;
+    private RatingInfo[] data;
     private int total;
     private float density;
-    private int marginRightDp;
 
     public DonutDrawView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -34,13 +32,11 @@ public class DonutDrawView extends android.support.v7.widget.AppCompatImageView 
         //marginRightDp = dp2px(12);
     }
 
-    public void setData(int[] data, @ColorInt int[] colors, String[] labels) {
+    public void setData(RatingInfo[] data) {
         this.data = data;
-        this.colors = colors;
-        this.labels = labels;
         this.total = 0;
-        for (int i = 0; i < data.length; i++) {
-            this.total += data[i];
+        for (RatingInfo info : data) {
+            this.total += info.count;
         }
     }
 
@@ -73,15 +69,15 @@ public class DonutDrawView extends android.support.v7.widget.AppCompatImageView 
 
         float startAngle = 270;
         for (int i = 0; i < this.data.length; i++) {
-            paint.setColor(colors[i]);
-            float percent = (float) this.data[i] / this.total;
+            paint.setColor(this.data[i].color);
+            float percent = (float) this.data[i].count / this.total;
             float angle = percent * 360;
             this.paint.setStyle(Style.STROKE);
             canvas.drawArc(left, top, right, bottom, startAngle, angle, false, this.paint);
             startAngle += angle;
             this.paint.setStyle(Style.FILL);
             canvas.drawRect(legendLeft, legendTop, legendRight, legendTop + legendHeight, this.paint);
-            canvas.drawText(Integer.toString(this.data[i]) + "×" + this.labels[i], legendRight + dp2px(4), legendTop + legendHeight - dp2px(2), this.textPaint);
+            canvas.drawText(Integer.toString(this.data[i].count) + "×" + this.data[i].name, legendRight + dp2px(4), legendTop + legendHeight - dp2px(2), this.textPaint);
             legendTop += legendHeight + legendSpace;
         }
         super.onDraw(canvas);

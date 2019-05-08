@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.widget.RadioButton;
 
 import gg.my.gamemanager.R;
-import gg.my.gamemanager.provider.RatingInfo;
+import gg.my.gamemanager.helpers.RatingInfo;
 
 public class Voter extends android.support.constraint.ConstraintLayout {
     private RadioButton setHist;
@@ -18,9 +18,7 @@ public class Voter extends android.support.constraint.ConstraintLayout {
 
     public Voter(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        //使用布局资源填充视图
         LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        //加载布局文件
         mInflater.inflate(R.layout.control_voter, this, true);
 
         this.setHist = findViewById(R.id.voter_set_hist);
@@ -32,8 +30,9 @@ public class Voter extends android.support.constraint.ConstraintLayout {
         this.setDonut.toggle();
     }
 
-    public void setOptions(RatingInfo[] data) {
+    public void setData(RatingInfo[] data) {
         this.data = data;
+        this.hist.setData(data);
         this.donut.setData(data);
     }
 

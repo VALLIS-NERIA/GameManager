@@ -1,4 +1,4 @@
-package gg.my.gamemanager.model;
+package gg.my.gamemanager.models;
 
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -1,4 +1,4 @@
-package gg.my.gamemanager.provider;
+package gg.my.gamemanager.helpers;
 
 import android.content.Context;
 
@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -19,55 +20,39 @@ import java.util.Calendar;
 import java.util.List;
 
 import gg.my.gamemanager.R;
-import gg.my.gamemanager.model.DlcInfo;
-import gg.my.gamemanager.model.Game;
+import gg.my.gamemanager.models.DlcInfo;
+import gg.my.gamemanager.models.Game;
 
 import static android.content.Context.MODE_PRIVATE;
 
 public class GameDataProvider {
-    public static GameDataProvider getInstance(){
-        return instance;
+    private static File dir;
+    private static File jsonFile;
+    public static List<Game> games;
+
+    private GameDataProvider() {
     }
 
-    public static GameDataProvider tryCreateInstance(Context context){
-        if(instance != null) return instance;
-        instance = new GameDataProvider();
-        instance.init(context);
-        return instance;
+    public static void save() {
+        writeGamesToJson();
     }
 
-    private static GameDataProvider instance;
-
-    private GameDataProvider(){
-        instance = this;
-    }
-
-    public List<Game> games;
-
-    public void save(Context context){
-        writeGamesToJson(context);
-    }
-
-    private void init(Context context) {
-        List<Game> list = getGamesFromJson(context);
-        // list is null usually means the file does not exist.
-        if (list == null) {
+    public static void init(Context context) {
+        dir = context.getFilesDir();
+        jsonFile = new File(dir, "games.json");
+        if (jsonFile.exists()) {
+            games = getGamesFromJson();
+        } else {
             // create a sample game list
             games = new ArrayList<>();
             games.add(getSampleGame(context));
             games.add(getSampleGame2(context));
-            // create the json file
-            File dir = context.getFilesDir();
-            File file = new File(dir, "games.json");
             try {
-                file.createNewFile();
+                jsonFile.createNewFile();
+                writeGamesToJson();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            // write game list to file
-            writeGamesToJson(context);
-        } else {
-            games = list;
         }
     }
 
@@ -76,9 +61,9 @@ public class GameDataProvider {
      *
      * @return the game list. Returns null if file does not exist.
      */
-    private List<Game> getGamesFromJson(Context context) {
+    private static List<Game> getGamesFromJson() {
         try {
-            FileInputStream is = context.openFileInput("games.json");
+            FileInputStream is = new FileInputStream(jsonFile);
             InputStreamReader sr = new InputStreamReader(is);
             BufferedReader reader = new BufferedReader(sr);
             String line;
@@ -87,7 +72,6 @@ public class GameDataProvider {
                 while ((line = reader.readLine()) != null) {
                     sb.append(line);
                 }
-                reader.close();
                 reader.close();
                 is.close();
                 JSONArray arr = new JSONArray(sb.toString());
@@ -117,14 +101,14 @@ public class GameDataProvider {
     /**
      * Writes the game list to json file.
      */
-    private void writeGamesToJson(Context context) {
+    private static void writeGamesToJson() {
         JSONArray arr = new JSONArray();
         for (Game g : games) {
             JSONObject obj = g.toJson();
             arr.put(obj);
         }
         try {
-            OutputStream os = context.openFileOutput("games.json", MODE_PRIVATE);
+            OutputStream os = new FileOutputStream(jsonFile);
             OutputStreamWriter sw = new OutputStreamWriter(os);
             sw.write(arr.toString());
             sw.close();
@@ -134,7 +118,7 @@ public class GameDataProvider {
     }
 
     // returns a sample game named "Layers of fear".
-    private Game getSampleGame(Context context) {
+    private static Game getSampleGame(Context context) {
         Game sampleGame = new Game();
         sampleGame.setName(context.getString(R.string.default_gameName));
         sampleGame.setDescription(context.getString(R.string.default_gameDesc));
@@ -155,7 +139,7 @@ public class GameDataProvider {
         return sampleGame;
     }
 
-    private Game getSampleGame2(Context context) {
+    private static Game getSampleGame2(Context context) {
         Game sampleGame = new Game();
         sampleGame.setName(context.getString(R.string.default2_gameName));
         sampleGame.setDescription(context.getString(R.string.default2_gameDesc));

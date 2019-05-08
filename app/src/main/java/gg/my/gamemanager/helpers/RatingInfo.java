@@ -1,9 +1,9 @@
-package gg.my.gamemanager.provider;
+package gg.my.gamemanager.helpers;
 
 import android.content.Context;
 
 import gg.my.gamemanager.R;
-import gg.my.gamemanager.model.Game;
+import gg.my.gamemanager.models.Game;
 
 public class RatingInfo {
     public String name;
