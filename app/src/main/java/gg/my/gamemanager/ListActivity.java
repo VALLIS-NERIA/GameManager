@@ -18,21 +18,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
+
+import gg.my.gamemanager.model.DlcInfo;
+import gg.my.gamemanager.model.Game;
+import gg.my.gamemanager.provider.GameDataProvider;
 
 
 // 这是一个复用的Activity，用来显示游戏列表或者DLC列表。app启动时默认进入ListActivity，并且显示游戏列表。
@@ -49,7 +39,7 @@ import java.util.List;
  * For cross-activity interactions there are 4 fields.
  * {@link ListActivity#REQUEST_TYPE}: (REQUIRED) determines the action type. {@see {@link ListActivity#TYPE_VIEW_GAME}}
  * {@link ListActivity#MSG_ITEM}: to set or get the passed {@link Game} or {@link DlcInfo}
- * {@link ListActivity#MSG_INDEX}: to set or get the index of passed item, in its original list({@link ListActivity#games} or {@link Game#dlcs})
+ * {@link ListActivity#MSG_INDEX}: to set or get the index of passed item, in its original list({@link ListActivity#gameProvider} or {@link Game#dlcs})
  * {@link ListActivity#MSG_RETURN_DATA}: to set or get the {@link Game} or {@link DlcInfo} return by child activity
  * <p>
  * The value of {@link ListActivity#REQUEST_TYPE} should be one of following:
@@ -93,13 +83,13 @@ public class ListActivity extends AppCompatActivity {
     private FloatingActionButton fabNew;
 
     // used in game list mode
-    private List<Game> games;
+    private GameDataProvider gameProvider;
 
     // used in DLC list mode
     private List<DlcInfo> dlcs;
     private Game currentGame;
     /**
-     * Whether we are showing games, or DLCs
+     * Whether we are showing gameProvider, or DLCs
      */
     private boolean dlcMode;
     /**
@@ -117,69 +107,8 @@ public class ListActivity extends AppCompatActivity {
         this.updateAndSave();
     }
 
-    /**
-     * Try to get a list of {@link Game} from file "games.json".
-     *
-     * @return the game list. Returns null if file does not exist.
-     */
-    private List<Game> getGamesFromJson() {
-        try {
-            FileInputStream is = this.openFileInput("games.json");
-            InputStreamReader sr = new InputStreamReader(is);
-            BufferedReader reader = new BufferedReader(sr);
-            String line;
-            StringBuilder sb = new StringBuilder();
-            try {
-                while ((line = reader.readLine()) != null) {
-                    sb.append(line);
-                }
-                reader.close();
-                reader.close();
-                is.close();
-                JSONArray arr = new JSONArray(sb.toString());
-                int len = arr.length();
-                List<Game> list = new ArrayList<>();
-                for (int i = 0; i < len; i++) {
-                    list.add(Game.fromJsonObject(arr.getJSONObject(i)));
-                }
-                return list;
-            } catch (JSONException | IOException e) {
-                e.printStackTrace();
-                return null;
-            } finally {
-                try {
-                    reader.close();
-                    sr.close();
-                    is.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (FileNotFoundException e) {
-            return null;
-        }
-    }
 
-    /**
-     * Writes the game list to json file.
-     */
-    private void writeGamesToJson() {
-        JSONArray arr = new JSONArray();
-        for (Game g : this.games) {
-            JSONObject obj = g.toJson();
-            arr.put(obj);
-        }
-        try {
-            OutputStream os = this.openFileOutput("games.json", MODE_PRIVATE);
-            OutputStreamWriter sw = new OutputStreamWriter(os);
-            sw.write(arr.toString());
-            sw.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-   private void initFieldsAndViews() {
+    private void initFieldsAndViews() {
         Intent intent = getIntent();
         String type = intent.getStringExtra(REQUEST_TYPE);
 
@@ -190,26 +119,7 @@ public class ListActivity extends AppCompatActivity {
         }
         // type is null means Game mode
         else {
-            List<Game> list = getGamesFromJson();
-            // list is null usually means the file does not exist.
-            if (list == null) {
-                // create a sample game list
-                this.games = new ArrayList<>();
-                this.games.add(getSampleGame());
-                this.games.add(getSampleGame2());
-                // create the json file
-                File dir = this.getFilesDir();
-                File file = new File(dir, "games.json");
-                try {
-                    file.createNewFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                // write game list to file
-                this.writeGamesToJson();
-            } else {
-                this.games = list;
-            }
+            this.gameProvider = GameDataProvider.tryCreateInstance(this);
             dlcMode = false;
         }
 
@@ -243,7 +153,7 @@ public class ListActivity extends AppCompatActivity {
         fabSave.setOnClickListener(this::clickSaveDlcs);
 
         listCount = this.findViewById(R.id.list_countText);
-        listCount.setText(String.format(getString(R.string.info_template_listCount), dlcMode ? this.dlcs.size() : this.games.size()));
+        listCount.setText(String.format(getString(R.string.info_template_listCount), dlcMode ? this.dlcs.size() : this.gameProvider.games.size()));
     }
 
     /**
@@ -254,10 +164,10 @@ public class ListActivity extends AppCompatActivity {
         if (this.dlcMode) {
             adapter = MyAdapter.ForDlcs(this.dlcs, this::clickViewDlc);
         } else {
-            adapter = MyAdapter.ForGames(this.games, this::clickViewGame);
+            adapter = MyAdapter.ForGames(this.gameProvider.games, this::clickViewGame);
         }
         recyclerView.setAdapter(adapter);
-        if (!dlcMode) writeGamesToJson();
+        if (!dlcMode) this.gameProvider.save(this);
         fabSave.setImageResource(dlcDirty ? android.R.drawable.ic_menu_save : android.R.drawable.ic_menu_revert);
     }
 
@@ -272,7 +182,7 @@ public class ListActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
                     // get the returned Game
                     Game returnedGame = (Game) data.getSerializableExtra(MSG_RETURN_DATA);
-                    this.games.add(returnedGame);
+                    this.gameProvider.games.add(returnedGame);
                     this.updateAndSave();
                 }
                 break;
@@ -283,7 +193,7 @@ public class ListActivity extends AppCompatActivity {
                     Game returnedGame = (Game) data.getSerializableExtra(MSG_RETURN_DATA);
                     int index = data.getIntExtra(MSG_INDEX, -1);
                     if (returnedGame != null && index > -1) {
-                        this.games.set(index, returnedGame);
+                        this.gameProvider.games.set(index, returnedGame);
                         this.updateAndSave();
                     }
                 }
@@ -291,7 +201,7 @@ public class ListActivity extends AppCompatActivity {
                 else if (resultCode == RESULT_DELETED) {
                     int index = data.getIntExtra(MSG_INDEX, -1);
                     if (index > -1) {
-                        this.games.remove(index);
+                        this.gameProvider.games.remove(index);
                         this.updateAndSave();
                     }
                 }
@@ -334,34 +244,6 @@ public class ListActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    // returns a sample game named "Layers of fear".
-    private Game getSampleGame() {
-        Game sampleGame = new Game();
-        sampleGame.setName(getString(R.string.default_gameName));
-        sampleGame.setDescription(getString(R.string.default_gameDesc));
-        Calendar date = Calendar.getInstance();
-        date.set(Calendar.YEAR, 2019);
-        date.set(Calendar.MONTH, 1);
-        date.set(Calendar.DAY_OF_MONTH, 19);
-        sampleGame.setDate(date);
-
-        DlcInfo sampleDlc = new DlcInfo();
-        sampleDlc.setName(getString(R.string.default_dlcName));
-        sampleDlc.setDescription(getString(R.string.default_dlcDesc));
-        sampleGame.addDlc(sampleDlc);
-        return sampleGame;
-    }
-    private Game getSampleGame2(){
-        Game sampleGame2 = new Game();
-        sampleGame2.setName(getString(R.string.default2_gameName));
-        sampleGame2.setDescription(getString(R.string.default2_gameDesc));
-        Calendar date = Calendar.getInstance();
-        date.set(Calendar.YEAR, 2014);
-        date.set(Calendar.MONTH, 1);
-        date.set(Calendar.DAY_OF_MONTH, 19);
-        sampleGame2.setDate(date);
-        return sampleGame2;
-    }
 
     // when I click the "add" button under game mode,
     // calls GameDetailActivity with request code CODE_ADD_GAME
@@ -388,7 +270,7 @@ public class ListActivity extends AppCompatActivity {
         }
         Intent intent = new Intent(ListActivity.this, GameDetailActivity.class);
         intent.putExtra(REQUEST_TYPE, TYPE_VIEW_GAME);
-        intent.putExtra(MSG_ITEM, this.games.get(index));
+        intent.putExtra(MSG_ITEM, this.gameProvider.games.get(index));
         intent.putExtra(MSG_INDEX, index);
         startActivityForResult(intent, CODE_VIEW_GAME);
     }
@@ -408,15 +290,15 @@ public class ListActivity extends AppCompatActivity {
 
     //when I click on some existing Dlc under DLc mode
     //calls DlcEditActivity with request code CODE_VIEW_DLC
-    private void clickViewDlc(int index){
-        if(!dlcMode){
+    private void clickViewDlc(int index) {
+        if (!dlcMode) {
             throw new AssertionError("Should be DLC mode!");
         }
-        Intent intent = new Intent(ListActivity.this,DlcEditActivity.class);
-        intent.putExtra(REQUEST_TYPE,TYPE_VIEW_DLC);
-        intent.putExtra(MSG_ITEM,this.dlcs.get(index));
-        intent.putExtra(MSG_INDEX,index);
-        startActivityForResult(intent,CODE_VIEW_DLC);
+        Intent intent = new Intent(ListActivity.this, DlcEditActivity.class);
+        intent.putExtra(REQUEST_TYPE, TYPE_VIEW_DLC);
+        intent.putExtra(MSG_ITEM, this.dlcs.get(index));
+        intent.putExtra(MSG_INDEX, index);
+        startActivityForResult(intent, CODE_VIEW_DLC);
     }
 
     // when I click the "back/save" button under DLC mode
@@ -435,7 +317,7 @@ public class ListActivity extends AppCompatActivity {
     /* for recycler view */
 
     //when I click Back button instead of clicking custom button.
-    public void onBackPressed(){
+    public void onBackPressed() {
         Intent intent = new Intent();
         // if the DLC list is dirty, we return the current game (along with its DLCs)
         if (dlcDirty) {
@@ -446,6 +328,7 @@ public class ListActivity extends AppCompatActivity {
         }
         finish();
     }
+
     // a simple divider in recycler view.
     private class MyDivider extends RecyclerView.ItemDecoration {
         private Paint paint;

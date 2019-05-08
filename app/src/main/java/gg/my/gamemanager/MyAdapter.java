@@ -9,6 +9,10 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import gg.my.gamemanager.control.DrawImageView;
+import gg.my.gamemanager.model.DlcInfo;
+import gg.my.gamemanager.model.Game;
+
 /**
  * Adapter for RecyclerView.
  * Use factory methods to create instances.

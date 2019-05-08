@@ -10,13 +10,14 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 
+import gg.my.gamemanager.model.DlcInfo;
+
 import static gg.my.gamemanager.ListActivity.MSG_INDEX;
 import static gg.my.gamemanager.ListActivity.MSG_ITEM;
 import static gg.my.gamemanager.ListActivity.MSG_RETURN_DATA;
 import static gg.my.gamemanager.ListActivity.REQUEST_TYPE;
 import static gg.my.gamemanager.ListActivity.RESULT_DELETED;
 import static gg.my.gamemanager.ListActivity.TYPE_ADD_DLC;
-import static gg.my.gamemanager.ListActivity.TYPE_EDIT_DLC;
 import static gg.my.gamemanager.ListActivity.TYPE_VIEW_DLC;
 
 

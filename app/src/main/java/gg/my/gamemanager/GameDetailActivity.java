@@ -1,6 +1,5 @@
 package gg.my.gamemanager;
 
-import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -10,12 +9,17 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.Calendar;
 import java.util.Locale;
+
+import gg.my.gamemanager.control.DatePickButton;
+import gg.my.gamemanager.control.DonutDrawView;
+import gg.my.gamemanager.control.Voter;
+import gg.my.gamemanager.model.Game;
+import gg.my.gamemanager.provider.RatingInfo;
 
 import static gg.my.gamemanager.ListActivity.CODE_LIST_DLC;
 import static gg.my.gamemanager.ListActivity.MSG_INDEX;
@@ -34,17 +38,17 @@ public class GameDetailActivity extends AppCompatActivity {
 
     private EditText nameEdit;
     private EditText priceEdit;
-    private Button dateButton;
+    private DatePickButton dateButton;
     private Button dlcButton;
     private EditText descEdit;
     private TextView screenHour;
     private EditText buttonHour;
+    private Voter voter;
 
     private FloatingActionButton buttonEdit;
     private FloatingActionButton buttonSave;
     private FloatingActionButton buttonCancel;
     private FloatingActionButton buttonDel;
-
 
 
     private Game currentGame;
@@ -83,11 +87,15 @@ public class GameDetailActivity extends AppCompatActivity {
         buttonSave = findViewById(R.id.detail_fabSave);
         buttonCancel = findViewById(R.id.detail_fabCancel);
         buttonDel = findViewById(R.id.detail_fabDel);
-        buttonHour = findViewById(R.id.detail_gamehour);
+        buttonHour = findViewById(R.id.detail_gamehour_edit);
         screenHour = findViewById(R.id.detial_screenGamehours);
-        dateButton.setOnClickListener(this::clickDate);
+        voter = findViewById(R.id.detail_voter);
+
+        voter.setOptions(RatingInfo.CreateFromGame(this.currentGame, this));
+
         dlcButton.setOnClickListener(this::clickDlc);
         isNewGame = type.equals(TYPE_ADD_GAME);
+
         editMode = isNewGame;
         dlcDirty = false;
     }
@@ -114,9 +122,10 @@ public class GameDetailActivity extends AppCompatActivity {
 
             }
         });
-        screenHour.setText(getString(R.string.hours) + " "+ String.format(loc, "%d", currentGame.getHours())  + " " + getString(R.string.Hours));
+        screenHour.setText(getString(R.string.hours) + " " + String.format(loc, "%d", currentGame.getHours()) + " " + getString(R.string.Hours));
         priceEdit.setText(String.format(loc, "%.2f", currentGame.getPrice()));
-        dateButton.setText(formatDate(currentGame.getDate()));
+        dateButton.setDate(currentGame.getDate());
+        dateButton.setAfterPickCallback(d -> this.selectedDate = d);
         descEdit.setText(currentGame.getDescription());
         dlcButton.setText(String.format(loc, "%d", currentGame.getDlcs().size()));
         if (editMode) {
@@ -131,7 +140,7 @@ public class GameDetailActivity extends AppCompatActivity {
             buttonCancel.setImageResource(android.R.drawable.ic_menu_close_clear_cancel);
             buttonCancel.setOnClickListener(this::clickCancel);
             buttonSave.setVisibility(View.VISIBLE);
-            buttonSave.setImageResource(android.R.drawable.ic_menu_save );
+            buttonSave.setImageResource(android.R.drawable.ic_menu_save);
             if (!isNewGame) buttonDel.setVisibility(View.VISIBLE);
             buttonSave.setOnClickListener(this::clickSave);
             buttonCancel.setOnClickListener(this::clickCancel);
@@ -178,37 +187,6 @@ public class GameDetailActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private String formatDate(Calendar date) {
-        return String.format("%d-%d-%d", date.get(Calendar.YEAR), date.get(Calendar.MONTH) + 1, date.get(Calendar.DAY_OF_MONTH));
-    }
-
-    // when I click on the date button, it shows a date picker dialog
-    private void clickDate(View view) {
-        if (view.getId() != R.id.detail_date_button) {
-            return;
-        }
-        Calendar current = currentGame.getDate();
-        DatePickerDialog datePicker = new DatePickerDialog(
-                GameDetailActivity.this,
-                this::pickedDate, // called after picking a date
-                current.get(Calendar.YEAR),
-                current.get(Calendar.MONTH) + 1,
-                current.get(Calendar.DAY_OF_MONTH));
-
-        datePicker.show();
-    }
-
-    // after I pick a date in the date picker dialog
-    private void pickedDate(DatePicker v, int year, int monthOfYear, int dayOfMonth) {
-        Calendar picked = Calendar.getInstance();
-        picked.set(Calendar.YEAR, year);
-        picked.set(Calendar.MONTH, monthOfYear);
-        picked.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-        // update views
-        selectedDate = picked;
-        dateButton.setText(formatDate(selectedDate));
-    }
-
     // when I click on the DLC button, it goes to ListActivity
     private void clickDlc(View view) {
         Intent intent = new Intent(this, ListActivity.class);
@@ -236,8 +214,7 @@ public class GameDetailActivity extends AppCompatActivity {
         currentGame.setPrice(Float.parseFloat(priceEdit.getText().toString()));
         try {
             currentGame.setHours(Integer.parseInt(buttonHour.getText().toString()));
-        }
-        catch(NumberFormatException e){
+        } catch (NumberFormatException e) {
         }
         if (selectedDate != null) {
             currentGame.setDate(selectedDate);
@@ -252,16 +229,14 @@ public class GameDetailActivity extends AppCompatActivity {
     }
 
     //when I click Back button instead of clicking custom button.
-    public void onBackPressed(){
-        if(dlcDirty)
-        {
+    public void onBackPressed() {
+        if (dlcDirty) {
             currentGame.setName(nameEdit.getText().toString());
             currentGame.setDescription(descEdit.getText().toString());
             currentGame.setPrice(Float.parseFloat(priceEdit.getText().toString()));
             try {
                 currentGame.setHours(Integer.parseInt(buttonHour.getText().toString()));
-            }
-            catch(NumberFormatException e){
+            } catch (NumberFormatException e) {
             }
             if (selectedDate != null) {
                 currentGame.setDate(selectedDate);
@@ -273,7 +248,7 @@ public class GameDetailActivity extends AppCompatActivity {
             intent.putExtra(MSG_INDEX, gameIndex);
             setResult(RESULT_OK, intent);
             finish();
-        }   else {
+        } else {
             // if I'm editing a new game, just return
             if (isNewGame || !editMode) {
                 Intent intent = new Intent();
@@ -290,7 +265,7 @@ public class GameDetailActivity extends AppCompatActivity {
 
     // when I click on the cancel button
     private void clickCancel(View view) {
-        if (view.getId() != R.id.detail_fabCancel ) throw new AssertionError();
+        if (view.getId() != R.id.detail_fabCancel) throw new AssertionError();
 
         // if I'm editing a new game, just return
         if (isNewGame || !editMode) {

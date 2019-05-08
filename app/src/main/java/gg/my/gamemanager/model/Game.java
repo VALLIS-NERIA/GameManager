@@ -1,4 +1,4 @@
-package gg.my.gamemanager;
+package gg.my.gamemanager.model;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,13 +16,16 @@ import java.util.List;
  * The game model class.
  */
 
-class Game implements Serializable {
+public class Game implements Serializable {
     private static final String FIELD_NAME = "name";
     private static final String FIELD_DESC = "description";
     private static final String FIELD_PRICE = "price";
     private static final String FIELD_DATE = "date";
     private static final String FIELD_DLC = "dlcs";
     private static final String FIELD_HOUR = "hours";
+    private static final String FIELD_GOOD = "rate_good";
+    private static final String FIELD_SOSO = "rate_soso";
+    private static final String FIELD_BAD = "rate_bad";
     private static DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
     private String name;
@@ -31,6 +34,9 @@ class Game implements Serializable {
     private Calendar date;
     private int hours;
     private List<DlcInfo> dlcs;
+    private int rateGood;
+    private int rateSoso;
+    private int rateBad;
 
     public Game() {
         this.date = Calendar.getInstance();
@@ -50,6 +56,10 @@ class Game implements Serializable {
         g.description = jobj.getString(FIELD_DESC);
         g.price = (float) jobj.getDouble(FIELD_PRICE);
         g.hours = jobj.getInt(FIELD_HOUR);
+        g.rateGood = jobj.getInt(FIELD_GOOD);
+        g.rateSoso = jobj.getInt(FIELD_SOSO);
+        g.rateBad = jobj.getInt(FIELD_BAD);
+
         try {
             g.date.setTime(df.parse(jobj.getString(FIELD_DATE)));
         } catch (ParseException e) {
@@ -57,7 +67,7 @@ class Game implements Serializable {
         }
         JSONArray arr = jobj.getJSONArray(FIELD_DLC);
         int len = arr.length();
-        for(int i=0;i<len;i++){
+        for (int i = 0; i < len; i++) {
             DlcInfo d = DlcInfo.fromJson(arr.getJSONObject(i));
             g.dlcs.add(d);
         }
@@ -75,7 +85,10 @@ class Game implements Serializable {
             obj.put(FIELD_DESC, this.description);
             obj.put(FIELD_PRICE, (double) this.price);
             obj.put(FIELD_DATE, df.format(this.date.getTime()));
-            obj.put(FIELD_HOUR,hours);
+            obj.put(FIELD_HOUR, hours);
+            obj.put(FIELD_GOOD, rateGood);
+            obj.put(FIELD_SOSO, rateSoso);
+            obj.put(FIELD_BAD, rateBad);
 
             JSONArray arr = new JSONArray();
             for (DlcInfo d : this.dlcs) {
@@ -83,8 +96,7 @@ class Game implements Serializable {
             }
             obj.put(FIELD_DLC, arr);
             return obj;
-        }
-        catch(JSONException e){
+        } catch (JSONException e) {
             return null;
         }
     }
@@ -125,8 +137,8 @@ class Game implements Serializable {
         return dlcs;
     }
 
-    public int getDlcCount(){
-        if(this.dlcs==null) {
+    public int getDlcCount() {
+        if (this.dlcs == null) {
             this.dlcs = new ArrayList<>();
             return 0;
         }
@@ -138,7 +150,7 @@ class Game implements Serializable {
         this.dlcs = dlcs;
     }
 
-    public void setHours(int hour){
+    public void setHours(int hour) {
         this.hours += Math.abs(hour);
     }
 
@@ -154,5 +166,34 @@ class Game implements Serializable {
 
     public void addDlc(DlcInfo dlc) {
         this.dlcs.add(dlc);
+    }
+
+
+    public int getRateGood() {
+        return rateGood;
+    }
+
+    public void voteGood() {
+        rateGood += 1;
+    }
+
+    public void voteSoso() {
+        rateSoso += 1;
+    }
+
+    public void voteBad() {
+        rateBad += 1;
+    }
+
+    public int getRateCount() {
+        return rateGood + rateSoso + rateBad;
+    }
+
+    public int getRateSoso() {
+        return rateSoso;
+    }
+
+    public int getRateBad() {
+        return rateBad;
     }
 }

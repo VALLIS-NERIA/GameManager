@@ -1,4 +1,4 @@
-package gg.my.gamemanager;
+package gg.my.gamemanager.model;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,7 +9,7 @@ import java.io.Serializable;
  * The DLC model class.
  */
 
-class DlcInfo implements Serializable {
+public class DlcInfo implements Serializable {
     private static final String FIELD_NAME = "name";
     private static final String FIELD_DESC = "description";
     private String name;

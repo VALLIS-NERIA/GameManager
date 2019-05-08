@@ -1,10 +1,12 @@
-package gg.my.gamemanager;
+package gg.my.gamemanager.control;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.util.AttributeSet;
+
+import gg.my.gamemanager.R;
 
 /**
  *  Draws a simple circle/square.

@@ -24,4 +24,7 @@
     <string name="Hours">小时</string>
     <string name="default2_gameName">反恐精英：全球攻势</string>
     <string name="default2_gameDesc">《反恐精英：全球攻势》（英语：Counter-Strike: Global Offensive），通常简称为CSGO，是一款由Valve与Hidden Path Entertainment合作开发 的第一人称射击游戏，也是《反恐精英：起源》之后《反恐精英》系列游戏的第四部作品（不包括Neo和Online等衍生作品）。</string>
+    <string name="rating_good">好评</string>
+    <string name="rating_soso">一般</string>
+    <string name="rating_bad">差评</string>
 </resources>

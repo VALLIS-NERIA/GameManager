@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    android:id="@+id/voter_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <RadioGroup
+        android:id="@+id/voter_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <RadioButton
+            android:id="@+id/voter_set_hist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="histogram"/>
+
+        <RadioButton
+            android:id="@+id/voter_set_donut"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="donut"/>
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/voter_submit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Submit"
+        app:layout_constraintTop_toBottomOf="@id/voter_group"/>
+
+    <gg.my.gamemanager.control.DonutDrawView
+        android:id="@+id/voter_donut"
+        android:layout_width="0dp"
+        android:layout_height="96dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintWidth_min="220dp" />
+
+    <gg.my.gamemanager.control.HistogramDrawView
+        android:id="@+id/voter_hist"
+        android:layout_width="0dp"
+        android:layout_height="96dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintWidth_min="220dp" />
+</android.support.constraint.ConstraintLayout>
