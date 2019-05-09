@@ -101,6 +101,18 @@ public class Game {
         }
     }
 
+    public void loadFrom(Game other){
+        this.date = (Calendar) other.date.clone();
+        this.name = other.name;
+        this.description = other.description;
+        this.price = other.price;
+        this.hours = other.hours;
+        this.dlcs = other.cloneDlcs();
+        this.rateGood = other.rateGood;
+        this.rateSoso = other.rateSoso;
+        this.rateBad = other.rateBad;
+    }
+    
     public Game getClone(){
         Game g = new Game();
         g.date = (Calendar) this.date.clone();
@@ -109,6 +121,9 @@ public class Game {
         g.price = this.price;
         g.hours = this.hours;
         g.dlcs = this.cloneDlcs();
+        g.rateGood = this.rateGood;
+        g.rateSoso = this.rateSoso;
+        g.rateBad = this.rateBad;
 
         return g;
     }

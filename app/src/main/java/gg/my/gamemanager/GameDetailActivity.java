@@ -94,7 +94,9 @@ public class GameDetailActivity extends AppCompatActivity {
         voter = findViewById(R.id.detail_voter);
 
         voter.setData(RatingInfo.CreateFromGame(this.currentGame, this));
-
+        voter.afterSubmitCallback = ()->{
+            this.voter.updateData(new int[]{currentGame.getRateGood(),currentGame.getRateSoso(), currentGame.getRateBad()});
+        };
         dlcButton.setOnClickListener(this::clickDlc);
         isNewGame = type.equals(TYPE_ADD_GAME);
 
@@ -103,6 +105,9 @@ public class GameDetailActivity extends AppCompatActivity {
     }
 
     private void initViews() {
+        voter.setSubmitAvailable(editMode);
+        this.voter.updateData(new int[]{currentGame.getRateGood(),currentGame.getRateSoso(), currentGame.getRateBad()});
+
         loc = Locale.getDefault();
         getSupportActionBar().setTitle(String.format(getString(R.string.title_template_gameDetail), currentGame.getName()));
         nameEdit.setText(currentGame.getName());
@@ -211,17 +216,19 @@ public class GameDetailActivity extends AppCompatActivity {
         currentGame.setPrice(Float.parseFloat(priceEdit.getText().toString()));
         try {
             currentGame.setHours(Integer.parseInt(buttonHour.getText().toString()));
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException ignored) {
         }
         if (selectedDate != null) {
             currentGame.setDate(selectedDate);
         }
 
         GameDataProvider.save();
-        // return to ListActivity
-        Intent intent = new Intent();
-        setResult(RESULT_OK, intent);
-        finish();
+        this.editMode = false;
+        this.initViews();
+//        // return to ListActivity
+//        Intent intent = new Intent();
+//        setResult(RESULT_OK, intent);
+//        finish();
     }
 
     //when I click Back button instead of clicking custom button.
@@ -255,12 +262,14 @@ public class GameDetailActivity extends AppCompatActivity {
             finish();
         } else if (editMode) {
             editMode = false;
+            // revert
+            currentGame.loadFrom(backupGame);
             this.initViews();
         } else {
             Intent intent = new Intent();
 
             // revert all modifications
-            GameDataProvider.games.set(gameIndex, backupGame);
+            currentGame.loadFrom(backupGame);
             setResult(RESULT_CANCELED, intent);
             finish();
         }

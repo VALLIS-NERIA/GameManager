@@ -26,7 +26,10 @@ Lead the daughter through what’s left of the mansion and take part in the madn
     <string name="Hours"> Hours</string>
     <string name="default2_gameName">Counter Strike: Global Offensive</string>
     <string name="default2_gameDesc">Counter-Strike: Global Offensive (CS:GO) is a multiplayer first-person shooter video game developed by Hidden Path Entertainment and Valve Corporation. It is the fourth game in the Counter-Strike series and was released for Microsoft Windows, OS X, Xbox 360, and PlayStation 3 on August 21, 2012, while the Linux version was released in 2014.</string>
+    <string name="hint_rateGame">What do you think of this game?</string>
     <string name="rating_good">Good</string>
     <string name="rating_soso">So-so</string>
     <string name="rating_bad">Bad</string>
+    <string name="chart_hist">Histogram</string>
+    <string name="chart_donut">Donut Chart</string>
 </resources>

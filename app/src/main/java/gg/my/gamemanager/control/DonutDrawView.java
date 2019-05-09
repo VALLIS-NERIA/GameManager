@@ -68,16 +68,16 @@ public class DonutDrawView extends android.support.v7.widget.AppCompatImageView 
 
 
         float startAngle = 270;
-        for (int i = 0; i < this.data.length; i++) {
-            paint.setColor(this.data[i].color);
-            float percent = (float) this.data[i].count / this.total;
+        for (RatingInfo aData : this.data) {
+            paint.setColor(aData.color);
+            float percent = (float) aData.count / this.total;
             float angle = percent * 360;
             this.paint.setStyle(Style.STROKE);
             canvas.drawArc(left, top, right, bottom, startAngle, angle, false, this.paint);
             startAngle += angle;
             this.paint.setStyle(Style.FILL);
             canvas.drawRect(legendLeft, legendTop, legendRight, legendTop + legendHeight, this.paint);
-            canvas.drawText(Integer.toString(this.data[i].count) + "×" + this.data[i].name, legendRight + dp2px(4), legendTop + legendHeight - dp2px(2), this.textPaint);
+            canvas.drawText(Integer.toString(aData.count) + "×" + aData.name, legendRight + dp2px(4), legendTop + legendHeight - dp2px(2), this.textPaint);
             legendTop += legendHeight + legendSpace;
         }
         super.onDraw(canvas);

@@ -115,7 +115,7 @@ public class ListActivity extends AppCompatActivity {
         this.setContentView(R.layout.activity_list);
 
         this.initFieldsAndViews();
-        this.updateAndSave();
+        this.update();
     }
 
 
@@ -177,7 +177,7 @@ public class ListActivity extends AppCompatActivity {
     /**
      * Updates views and saves data.
      */
-    private void updateAndSave() {
+    private void update() {
         MyAdapter adapter;
         if (this.dlcMode) {
             adapter = MyAdapter.ForDlcs(this.currentDlcs, this::clickViewDlc);
@@ -194,36 +194,7 @@ public class ListActivity extends AppCompatActivity {
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            // [GAMEmode] after I tap the "add" button to create a new Game
-            case CODE_ADD_GAME:
-                if (resultCode == RESULT_OK) {
-                    this.updateAndSave();
-                }
-                break;
-            // [GAMEmode] after I tap on an existing Game to view/modify it.
-            case CODE_VIEW_GAME:
-                // the game is modified or deleted
-                if (resultCode == RESULT_OK || resultCode == RESULT_DELETED) {
-                    this.updateAndSave();
-                }
-                break;
-            // [DLCmode] after I tap on an existing DLC to edit it
-            case CODE_VIEW_DLC:
-                // the DLC is modified or deleted
-                if (resultCode == RESULT_OK || resultCode == RESULT_DELETED) {
-                    dlcDirty = true;
-                    this.updateAndSave();
-                }
-                break;
-            // [DLCmode] after I tap the "add" button to create a new DLC
-            case CODE_ADD_DLC:
-                if (resultCode == RESULT_OK) {
-                    dlcDirty = true;
-                    this.updateAndSave();
-                }
-            default:
-        }
+        this.update();
         super.onActivityResult(requestCode, resultCode, data);
     }
 
