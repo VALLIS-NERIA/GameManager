@@ -3,19 +3,17 @@ package gg.my.gamemanager.models;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
-
 /**
  * The DLC model class.
  */
 
-public class DlcInfo implements Serializable {
+public class DlcInfo {
     private static final String FIELD_NAME = "name";
     private static final String FIELD_DESC = "description";
     private String name;
     private String description;
 
-    public DlcInfo(){
+    public DlcInfo() {
         this.name = "";
         this.description = "";
     }
@@ -35,9 +33,21 @@ public class DlcInfo implements Serializable {
      */
     public JSONObject toJson() throws JSONException {
         JSONObject obj = new JSONObject();
-        obj.put(FIELD_NAME,this.name);
-        obj.put(FIELD_DESC,this.description);
+        obj.put(FIELD_NAME, this.name);
+        obj.put(FIELD_DESC, this.description);
         return obj;
+    }
+
+    public DlcInfo getClone(){
+        DlcInfo d = new DlcInfo();
+        d.name = this.name;
+        d.description = this.description;
+        return d;
+    }
+
+    @Override
+    public Object clone(){
+        return this.getClone();
     }
 
     public String getName() {

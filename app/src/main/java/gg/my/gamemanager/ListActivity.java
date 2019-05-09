@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,9 +21,9 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import gg.my.gamemanager.helpers.GameDataProvider;
 import gg.my.gamemanager.models.DlcInfo;
 import gg.my.gamemanager.models.Game;
-import gg.my.gamemanager.helpers.GameDataProvider;
 
 
 // 这是一个复用的Activity，用来显示游戏列表或者DLC列表。app启动时默认进入ListActivity，并且显示游戏列表。
@@ -38,9 +39,7 @@ import gg.my.gamemanager.helpers.GameDataProvider;
  * <p>
  * For cross-activity interactions there are 4 fields.
  * {@link ListActivity#REQUEST_TYPE}: (REQUIRED) determines the action type. {@see {@link ListActivity#TYPE_VIEW_GAME}}
- * {@link ListActivity#MSG_ITEM}: to set or get the passed {@link Game} or {@link DlcInfo}
- * {@link ListActivity#MSG_INDEX}: to set or get the index of passed item, in its original list
- * {@link ListActivity#MSG_RETURN_DATA}: to set or get the {@link Game} or {@link DlcInfo} return by child activity
+ * {@link ListActivity#MSG_GAME_INDEX}: to set or get the index of passed item, in its original list
  * <p>
  * The value of {@link ListActivity#REQUEST_TYPE} should be one of following:
  * {@link ListActivity#TYPE_VIEW_GAME} call {@link GameDetailActivity} to view a game when clicking on a game item in the list
@@ -52,8 +51,8 @@ import gg.my.gamemanager.helpers.GameDataProvider;
 public class ListActivity extends AppCompatActivity {
     public static final String REQUEST_TYPE = "gg.my.gamemanager.type";
     public static final String MSG_ITEM = "gg.my.gamemanager.item";
-    public static final String MSG_INDEX = "gg.my.gamemanager.index";
-    public static final String MSG_RETURN_DATA = "gg.my.gamemanager.return";
+    public static final String MSG_GAME_INDEX = "gg.my.gamemanager.gameindex";
+    public static final String MSG_DLC_INDEX = "gg.my.gamemanager.dlcindex";
 
     public static final String TYPE_VIEW_GAME = "gg.my.gamemanager.viewG";
     public static final String TYPE_ADD_GAME = "gg.my.gamemanager.addG";
@@ -79,16 +78,29 @@ public class ListActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private LinearLayoutManager layoutManager;
     private TextView listCount;
+    private FloatingActionButton fabCancel;
     private FloatingActionButton fabSave;
     private FloatingActionButton fabNew;
 
     // used in game list mode
 
     // used in DLC list mode
-    private List<DlcInfo> dlcs;
-    private Game currentGame;
+
+    /***
+     * this is a deep copy of the DLCs of given game.
+     */
+    private List<DlcInfo> backupDlcs;
+    /***
+     * this is the real DLC list.
+     */
+    private List<DlcInfo> currentDlcs;
     /**
-     * Whether we are showing gameProvider, or DLCs
+     * This is the real thing, DO NOT modify it.
+     */
+    private Game currentGame;
+    private int currentGameIndex;
+    /**
+     * Whether we are showing game, or DLCs
      */
     private boolean dlcMode;
     /**
@@ -112,9 +124,11 @@ public class ListActivity extends AppCompatActivity {
         String type = intent.getStringExtra(REQUEST_TYPE);
 
         if (type != null && type.equals(TYPE_LIST_DLC)) {
-            currentGame = (Game) intent.getSerializableExtra(MSG_ITEM);
+            currentGameIndex = intent.getIntExtra(MSG_GAME_INDEX, -1);
+            currentGame = GameDataProvider.games.get(currentGameIndex);
             dlcMode = true;
-            this.dlcs = currentGame.getDlcs();
+            this.currentDlcs = currentGame.getDlcs();
+            this.backupDlcs = currentGame.cloneDlcs();
         }
         // type is null means Game mode
         else {
@@ -151,8 +165,13 @@ public class ListActivity extends AppCompatActivity {
         fabSave.setImageResource(dlcDirty ? android.R.drawable.ic_menu_save : android.R.drawable.ic_menu_revert);
         fabSave.setOnClickListener(this::clickSaveDlcs);
 
+        // fabCancel is only available for dlc mode
+        fabCancel = this.findViewById(R.id.fab_cancel);
+        fabCancel.setVisibility(dlcMode ? View.VISIBLE : View.GONE);
+        fabCancel.setOnClickListener(this::clickCancelDlcs);
+
         listCount = this.findViewById(R.id.list_countText);
-        listCount.setText(String.format(getString(R.string.info_template_listCount), dlcMode ? this.dlcs.size() : GameDataProvider.games.size()));
+        listCount.setText(String.format(getString(R.string.info_template_listCount), dlcMode ? this.currentDlcs.size() : GameDataProvider.games.size()));
     }
 
     /**
@@ -161,13 +180,13 @@ public class ListActivity extends AppCompatActivity {
     private void updateAndSave() {
         MyAdapter adapter;
         if (this.dlcMode) {
-            adapter = MyAdapter.ForDlcs(this.dlcs, this::clickViewDlc);
+            adapter = MyAdapter.ForDlcs(this.currentDlcs, this::clickViewDlc);
         } else {
             adapter = MyAdapter.ForGames(GameDataProvider.games, this::clickViewGame);
         }
         recyclerView.setAdapter(adapter);
-        if (!dlcMode) GameDataProvider.save();
         fabSave.setImageResource(dlcDirty ? android.R.drawable.ic_menu_save : android.R.drawable.ic_menu_revert);
+        listCount.setText(String.format(getString(R.string.info_template_listCount), dlcMode ? this.currentDlcs.size() : GameDataProvider.games.size()));
     }
 
     /**
@@ -180,56 +199,28 @@ public class ListActivity extends AppCompatActivity {
             case CODE_ADD_GAME:
                 if (resultCode == RESULT_OK) {
                     this.updateAndSave();
-                } else {
-                    int index = data.getIntExtra(MSG_INDEX, -1);
-                    GameDataProvider.games.remove(index);
                 }
                 break;
             // [GAMEmode] after I tap on an existing Game to view/modify it.
             case CODE_VIEW_GAME:
-                // the game is modified.
-                if (resultCode == RESULT_OK) {
-                    this.updateAndSave();
-                }
-                // the game is deleted
-                else if (resultCode == RESULT_DELETED) {
-                    int index = data.getIntExtra(MSG_INDEX, -1);
-                    GameDataProvider.games.remove(index);
+                // the game is modified or deleted
+                if (resultCode == RESULT_OK || resultCode == RESULT_DELETED) {
                     this.updateAndSave();
                 }
                 break;
             // [DLCmode] after I tap on an existing DLC to edit it
             case CODE_VIEW_DLC:
-                // the DLC is modified
-                if (resultCode == RESULT_OK) {
-                    DlcInfo returnedDlc = (DlcInfo) data.getSerializableExtra(MSG_RETURN_DATA);
-                    int index = data.getIntExtra(MSG_INDEX, -1);
-                    if (returnedDlc != null && index > -1) {
-                        this.dlcs.set(index, returnedDlc);
-                        dlcDirty = true;
-                        this.updateAndSave();
-                    }
-                }
-                // the DLC is deleted
-                else if (resultCode == RESULT_DELETED) {
-                    int index = data.getIntExtra(MSG_INDEX, -1);
-                    if (index > -1) {
-                        this.dlcs.remove(index);
-                        dlcDirty = true;
-                        this.updateAndSave();
-
-                    }
+                // the DLC is modified or deleted
+                if (resultCode == RESULT_OK || resultCode == RESULT_DELETED) {
+                    dlcDirty = true;
+                    this.updateAndSave();
                 }
                 break;
             // [DLCmode] after I tap the "add" button to create a new DLC
             case CODE_ADD_DLC:
                 if (resultCode == RESULT_OK) {
-                    DlcInfo returnedDlc = (DlcInfo) data.getSerializableExtra(MSG_RETURN_DATA);
-                    if (returnedDlc != null) {
-                        this.dlcs.add(returnedDlc);
-                        dlcDirty = true;
-                        this.updateAndSave();
-                    }
+                    dlcDirty = true;
+                    this.updateAndSave();
                 }
             default:
         }
@@ -248,7 +239,7 @@ public class ListActivity extends AppCompatActivity {
         intent.putExtra(REQUEST_TYPE, TYPE_ADD_GAME);
         GameDataProvider.games.add(new Game());
         // the index of the Game in gameList
-        intent.putExtra(MSG_INDEX, GameDataProvider.games.size() - 1);
+        intent.putExtra(MSG_GAME_INDEX, GameDataProvider.games.size() - 1);
         // use request code so that onActivityResult can determine the child activity
         startActivityForResult(intent, CODE_ADD_GAME);
     }
@@ -261,7 +252,7 @@ public class ListActivity extends AppCompatActivity {
         }
         Intent intent = new Intent(ListActivity.this, GameDetailActivity.class);
         intent.putExtra(REQUEST_TYPE, TYPE_VIEW_GAME);
-        intent.putExtra(MSG_INDEX, index);
+        intent.putExtra(MSG_GAME_INDEX, index);
         startActivityForResult(intent, CODE_VIEW_GAME);
     }
 
@@ -273,8 +264,9 @@ public class ListActivity extends AppCompatActivity {
         }
         Intent intent = new Intent(this, DlcEditActivity.class);
         intent.putExtra(REQUEST_TYPE, TYPE_ADD_DLC);
-        intent.putExtra(MSG_ITEM, new DlcInfo());
-        intent.putExtra(MSG_INDEX, -1);
+        this.currentDlcs.add(new DlcInfo());
+        intent.putExtra(MSG_DLC_INDEX, currentDlcs.size() - 1);
+        intent.putExtra(MSG_GAME_INDEX, currentGameIndex);
         startActivityForResult(intent, CODE_ADD_DLC);
     }
 
@@ -286,8 +278,8 @@ public class ListActivity extends AppCompatActivity {
         }
         Intent intent = new Intent(ListActivity.this, DlcEditActivity.class);
         intent.putExtra(REQUEST_TYPE, TYPE_VIEW_DLC);
-        intent.putExtra(MSG_ITEM, this.dlcs.get(index));
-        intent.putExtra(MSG_INDEX, index);
+        intent.putExtra(MSG_DLC_INDEX, index);
+        intent.putExtra(MSG_GAME_INDEX, currentGameIndex);
         startActivityForResult(intent, CODE_VIEW_DLC);
     }
 
@@ -295,28 +287,45 @@ public class ListActivity extends AppCompatActivity {
     // DLC mode means there is a parent activity
     private void clickSaveDlcs(View v) {
         Intent intent = new Intent();
-        // if the DLC list is dirty, we return the current game (along with its DLCs)
+        // save the shadow to the real thing
         if (dlcDirty) {
-            intent.putExtra(MSG_RETURN_DATA, currentGame);
             setResult(RESULT_OK, intent);
         } else {
             setResult(RESULT_CANCELED, intent);
         }
         finish();
     }
+
+    private void clickCancelDlcs(View v){
+        Intent intent = new Intent();
+        currentGame.setDlcs(backupDlcs);
+        setResult(RESULT_CANCELED, intent);
+        finish();
+    }
+
     /* for recycler view */
 
     //when I click Back button instead of clicking custom button.
     public void onBackPressed() {
-        Intent intent = new Intent();
-        // if the DLC list is dirty, we return the current game (along with its DLCs)
-        if (dlcDirty) {
-            intent.putExtra(MSG_RETURN_DATA, currentGame);
-            setResult(RESULT_OK, intent);
+        if (dlcMode&&dlcDirty) {
+            AlertDialog.Builder ab = new AlertDialog.Builder(this);
+            ab.setTitle(getString(R.string.hint_title));
+            ab.setMessage(getString(R.string.hint_cancelConfirm));
+            ab.setPositiveButton(getString(R.string.button_yes), (di, num) -> {
+                di.dismiss();
+                this.clickSaveDlcs(null);
+            });
+
+            ab.setNegativeButton(getString(R.string.button_no), (di, num) -> {
+                di.dismiss();
+            });
+
+            ab.show();
         } else {
+            Intent intent = new Intent();
             setResult(RESULT_CANCELED, intent);
+            finish();
         }
-        finish();
     }
 
     // a simple divider in recycler view.

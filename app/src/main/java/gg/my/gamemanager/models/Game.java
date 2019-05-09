@@ -108,9 +108,18 @@ public class Game {
         g.description = this.description;
         g.price = this.price;
         g.hours = this.hours;
-        g.dlcs = new ArrayList<>(this.dlcs);
+        g.dlcs = this.cloneDlcs();
 
         return g;
+    }
+
+    public List<DlcInfo> cloneDlcs(){
+        List<DlcInfo> l = new ArrayList<>();
+        for (DlcInfo info : this.dlcs) {
+            l.add(info.getClone());
+        }
+
+        return l;
     }
 
     @Override

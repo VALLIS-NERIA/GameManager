@@ -18,13 +18,11 @@ import java.util.Locale;
 import gg.my.gamemanager.control.DatePickButton;
 import gg.my.gamemanager.control.Voter;
 import gg.my.gamemanager.helpers.GameDataProvider;
-import gg.my.gamemanager.models.Game;
 import gg.my.gamemanager.helpers.RatingInfo;
+import gg.my.gamemanager.models.Game;
 
 import static gg.my.gamemanager.ListActivity.CODE_LIST_DLC;
-import static gg.my.gamemanager.ListActivity.MSG_INDEX;
-import static gg.my.gamemanager.ListActivity.MSG_ITEM;
-import static gg.my.gamemanager.ListActivity.MSG_RETURN_DATA;
+import static gg.my.gamemanager.ListActivity.MSG_GAME_INDEX;
 import static gg.my.gamemanager.ListActivity.REQUEST_TYPE;
 import static gg.my.gamemanager.ListActivity.RESULT_DELETED;
 import static gg.my.gamemanager.ListActivity.TYPE_ADD_GAME;
@@ -50,9 +48,11 @@ public class GameDetailActivity extends AppCompatActivity {
     private FloatingActionButton buttonCancel;
     private FloatingActionButton buttonDel;
 
-
-    private Game currentGame;
+    /**
+     * this is a deep copy of the game passed in.
+     */
     private Game backupGame;
+    private Game currentGame;
     private Boolean isNewGame;
     private Boolean editMode;
     private Boolean dlcDirty;
@@ -76,7 +76,7 @@ public class GameDetailActivity extends AppCompatActivity {
         if (type == null || (!type.equals(TYPE_ADD_GAME) && !type.equals(ListActivity.TYPE_VIEW_GAME))) {
             throw new IllegalArgumentException("REQUEST_TYPE should be TYPE_ADD_GAME or TYPE_VIEW_GAME");
         }
-        gameIndex = intent.getIntExtra(MSG_INDEX, -1);
+        gameIndex = intent.getIntExtra(MSG_GAME_INDEX, -1);
         currentGame = GameDataProvider.games.get(gameIndex);
         backupGame = currentGame.getClone();
 
@@ -173,8 +173,6 @@ public class GameDetailActivity extends AppCompatActivity {
             case CODE_LIST_DLC:
                 // DLC list is modified
                 if (resultCode == RESULT_OK) {
-                    Game returnedGame = (Game) data.getSerializableExtra(MSG_RETURN_DATA);
-                    this.currentGame.setDlcs(returnedGame.getDlcs());
                     // update views
                     dlcButton.setText(String.format(loc, "%d", currentGame.getDlcs().size()));
                     dlcDirty = true;
@@ -193,7 +191,7 @@ public class GameDetailActivity extends AppCompatActivity {
     private void clickDlc(View view) {
         Intent intent = new Intent(this, ListActivity.class);
         intent.putExtra(REQUEST_TYPE, TYPE_LIST_DLC);
-        intent.putExtra(MSG_ITEM, this.currentGame);
+        intent.putExtra(MSG_GAME_INDEX, this.gameIndex);
         startActivityForResult(intent, CODE_LIST_DLC);
     }
 
@@ -207,9 +205,6 @@ public class GameDetailActivity extends AppCompatActivity {
 
     // when I click on the save button
     private void clickSave(View view) {
-        if (view.getId() != R.id.detail_fabSave || (!editMode && !dlcDirty))
-            throw new AssertionError();
-
         // write to currentGame
         currentGame.setName(nameEdit.getText().toString());
         currentGame.setDescription(descEdit.getText().toString());
@@ -222,66 +217,54 @@ public class GameDetailActivity extends AppCompatActivity {
             currentGame.setDate(selectedDate);
         }
 
+        GameDataProvider.save();
         // return to ListActivity
         Intent intent = new Intent();
-        intent.putExtra(MSG_RETURN_DATA, currentGame);
-        intent.putExtra(MSG_INDEX, gameIndex);
         setResult(RESULT_OK, intent);
         finish();
     }
 
     //when I click Back button instead of clicking custom button.
     public void onBackPressed() {
-        if (dlcDirty) {
-            currentGame.setName(nameEdit.getText().toString());
-            currentGame.setDescription(descEdit.getText().toString());
-            currentGame.setPrice(Float.parseFloat(priceEdit.getText().toString()));
-            try {
-                currentGame.setHours(Integer.parseInt(buttonHour.getText().toString()));
-            } catch (NumberFormatException e) {
-            }
-            if (selectedDate != null) {
-                currentGame.setDate(selectedDate);
-            }
+        if (dlcDirty || editMode) {
+            AlertDialog.Builder ab = new AlertDialog.Builder(this);
+            ab.setTitle(getString(R.string.hint_title));
+            ab.setMessage(getString(R.string.hint_cancelConfirm));
+            ab.setPositiveButton(getString(R.string.button_yes), (di, num) -> {
+                di.dismiss();
+                this.clickSave(null);
+            });
 
-            // return to ListActivity
-            Intent intent = new Intent();
-            intent.putExtra(MSG_RETURN_DATA, currentGame);
-            intent.putExtra(MSG_INDEX, gameIndex);
-            setResult(RESULT_OK, intent);
-            finish();
+            ab.setNegativeButton(getString(R.string.button_no), (di, num) -> {
+                di.dismiss();
+            });
+
+            ab.show();
         } else {
-            // if I'm editing a new game, just return
-            if (isNewGame || !editMode) {
-                Intent intent = new Intent();
-                setResult(RESULT_CANCELED, intent);
-                finish();
-            }
-            // otherwise back to view mode
-            else {
-                editMode = false;
-                this.initViews();
-            }
+            this.clickCancel(null);
         }
     }
 
     // when I click on the cancel button
     private void clickCancel(View view) {
-        if (view.getId() != R.id.detail_fabCancel) throw new AssertionError();
-
-        // if I'm editing a new game, just return
-        if (isNewGame || !editMode) {
+        // if I'm editing a new game, cancel means delete
+        if (isNewGame) {
             Intent intent = new Intent();
-            // revert changes by replacing with backup
+            GameDataProvider.games.remove(gameIndex);
+            setResult(RESULT_DELETED, intent);
+            finish();
+        } else if (editMode) {
+            editMode = false;
+            this.initViews();
+        } else {
+            Intent intent = new Intent();
+
+            // revert all modifications
             GameDataProvider.games.set(gameIndex, backupGame);
             setResult(RESULT_CANCELED, intent);
             finish();
         }
-        // otherwise back to view mode
-        else {
-            editMode = false;
-            this.initViews();
-        }
+
     }
 
     // when I click on the click button
@@ -295,7 +278,7 @@ public class GameDetailActivity extends AppCompatActivity {
         ab.setPositiveButton(getString(R.string.button_yes), (di, num) -> {
             di.dismiss();
             Intent intent = new Intent();
-            intent.putExtra(MSG_INDEX, gameIndex);
+            GameDataProvider.games.remove(gameIndex);
             setResult(RESULT_DELETED, intent);
             finish();
         });

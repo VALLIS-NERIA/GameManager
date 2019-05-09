@@ -15,8 +15,9 @@
     <string name="default_dlcDesc">恐惧层：继承扩展了恐惧层的情节，并讲述了画家的女儿的故事，她回到童年的家中面对她的过去。她可以原谅她的父亲，还是会对所发生的一切感到不满？重温她的经历，见证吞噬家庭的悲剧的全部范围。 引导女儿穿过豪宅的左边，并参与她父亲给予全家的疯狂。面对她过去的记忆，塑造她们等待着她的命运。</string>
     <string name="info_template_listCount">共计%d个条目</string>
     <string name="hint_deleteConfirm">你确定要删除该项目吗？</string>
+    <string name="hint_cancelConfirm">你有尚未保存的更改，要保存并返回吗？</string>
     <string name="button_yes">确定</string>
-    <string name="button_no">再想想</string>
+    <string name="button_no">算了</string>
     <string name="hint_title">提示</string>
     <string name="no_desc">没有描述</string>
     <string name="gamehoursphint">"今天我玩了 "</string>

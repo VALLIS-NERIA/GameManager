@@ -17,6 +17,7 @@ Lead the daughter through what’s left of the mansion and take part in the madn
     <string name="info_template_listCount">%d items.</string>
     <string name="hint_title">Alert</string>
     <string name="hint_deleteConfirm">Are you sure to delete this item?</string>
+    <string name="hint_cancelConfirm">You have unsaved modifications, do you wish to save them and back?</string>
     <string name="button_yes">Yes</string>
     <string name="button_no">Nope</string>
     <string name="no_desc">No description</string>
