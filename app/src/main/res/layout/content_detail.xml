@@ -7,7 +7,9 @@
     android:layout_margin="8dp"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="gg.my.gamemanager.GameDetailActivity"
-    tools:showIn="@layout/activity_detail">
+    tools:showIn="@layout/activity_detail"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
 
     <TextView
         android:id="@+id/detail_name_label"
@@ -25,6 +27,7 @@
         android:layout_height="wrap_content"
         android:text="CS:GO"
         android:textSize="12pt"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toRightOf="@+id/detail_name_label"
         app:layout_constraintWidth_percent="0.75" />
 
@@ -36,6 +39,7 @@
         android:text="@string/label_Price"
         android:textSize="8pt"
         app:layout_constraintBaseline_toBaselineOf="@+id/detail_price_edit"
+        app:layout_constraintLeft_toRightOf="@id/detail_name_edit"
         app:layout_constraintWidth_percent="0.25" />
 
     <EditText
@@ -56,18 +60,19 @@
         android:layout_height="wrap_content"
         android:text="@string/label_Date"
         android:textSize="8pt"
-
         app:layout_constraintBaseline_toBaselineOf="@+id/detail_date_button"
+        app:layout_constraintRight_toLeftOf="@id/detail_date_button"
         app:layout_constraintWidth_percent="0.25" />
 
     <gg.my.gamemanager.control.DatePickButton
         android:id="@+id/detail_date_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:text="2012-02-11"
         android:textSize="8pt"
         app:layout_constraintLeft_toRightOf="@+id/detail_date_label"
-        app:layout_constraintTop_toBottomOf="@+id/detail_price_edit"
+        app:layout_constraintTop_toBottomOf="@+id/detail_name_edit"
         app:layout_constraintWidth_percent="0.75" />
 
 
@@ -77,6 +82,7 @@
         android:layout_height="wrap_content"
         android:text="@string/label_DLC_s"
         android:textSize="8pt"
+        app:layout_constraintRight_toLeftOf="@id/detail_dlc_button"
         app:layout_constraintBaseline_toBaselineOf="@+id/detail_dlc_button"
         app:layout_constraintWidth_percent="0.25" />
 

@@ -2,6 +2,7 @@ package gg.my.gamemanager;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -12,6 +13,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
@@ -24,6 +26,8 @@ import java.util.List;
 import gg.my.gamemanager.helpers.GameDataProvider;
 import gg.my.gamemanager.models.DlcInfo;
 import gg.my.gamemanager.models.Game;
+
+import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 
 
 // 这是一个复用的Activity，用来显示游戏列表或者DLC列表。app启动时默认进入ListActivity，并且显示游戏列表。
@@ -39,18 +43,18 @@ import gg.my.gamemanager.models.Game;
  * <p>
  * For cross-activity interactions there are 4 fields.
  * {@link ListActivity#REQUEST_TYPE}: (REQUIRED) determines the action type. {@see {@link ListActivity#TYPE_VIEW_GAME}}
- * {@link ListActivity#MSG_GAME_INDEX}: to set or get the index of passed item, in its original list
+ * {@link ListActivity#MSG_GAME_INDEX}: to set or get the index of passed list_item, in its original list
  * <p>
  * The value of {@link ListActivity#REQUEST_TYPE} should be one of following:
- * {@link ListActivity#TYPE_VIEW_GAME} call {@link GameDetailActivity} to view a game when clicking on a game item in the list
+ * {@link ListActivity#TYPE_VIEW_GAME} call {@link GameDetailActivity} to view a game when clicking on a game list_item in the list
  * {@link ListActivity#TYPE_ADD_GAME} call {@link GameDetailActivity} to add a game when clicking the floating "add" button in game list mode
- * {@link ListActivity#TYPE_EDIT_DLC} call {@link DlcEditActivity} to edit a DLC when clicking on a DLC item
+ * {@link ListActivity#TYPE_EDIT_DLC} call {@link DlcEditActivity} to edit a DLC when clicking on a DLC list_item
  * {@link ListActivity#TYPE_LIST_DLC} call {@link ListActivity} to list the DLC(s) of a game, when clicking on the dlc button in {@link GameDetailActivity}
  * {@link ListActivity#TYPE_ADD_DLC} call {@link DlcEditActivity} to add a DLC when clicking the floating "add" button in DLC list mode
  */
 public class ListActivity extends AppCompatActivity {
     public static final String REQUEST_TYPE = "gg.my.gamemanager.type";
-    public static final String MSG_ITEM = "gg.my.gamemanager.item";
+    public static final String MSG_ITEM = "gg.my.gamemanager.list_item";
     public static final String MSG_GAME_INDEX = "gg.my.gamemanager.gameindex";
     public static final String MSG_DLC_INDEX = "gg.my.gamemanager.dlcindex";
 
@@ -76,7 +80,6 @@ public class ListActivity extends AppCompatActivity {
 
     // some views
     private RecyclerView recyclerView;
-    private LinearLayoutManager layoutManager;
     private TextView listCount;
     private FloatingActionButton fabCancel;
     private FloatingActionButton fabSave;
@@ -148,10 +151,19 @@ public class ListActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(title);
 
         // init recycler view
-        layoutManager = new LinearLayoutManager(this);
-        layoutManager.setOrientation(OrientationHelper.VERTICAL);
         recyclerView = this.findViewById(R.id.listView1);
-        recyclerView.setLayoutManager(layoutManager);
+        LinearLayoutManager portraitLayoutManager = new LinearLayoutManager(this);
+        portraitLayoutManager.setOrientation(OrientationHelper.VERTICAL);
+        GridLayoutManager landscapeLayoutManager = new GridLayoutManager(this, 2);
+        switch (getResources().getConfiguration().orientation) {
+            case ORIENTATION_LANDSCAPE:
+                portraitLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+                recyclerView.setLayoutManager(portraitLayoutManager);
+                break;
+            default:
+
+                recyclerView.setLayoutManager(portraitLayoutManager);
+        }
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new MyDivider(this, 2, getColor(R.color.colorPrimary)));
 
@@ -178,11 +190,11 @@ public class ListActivity extends AppCompatActivity {
      * Updates views and saves data.
      */
     private void update() {
-        MyAdapter adapter;
+        RecyclerView.Adapter adapter;
         if (this.dlcMode) {
-            adapter = MyAdapter.ForDlcs(this.currentDlcs, this::clickViewDlc);
+            adapter = ListAdapter.ForDlcs(this.currentDlcs, this::clickViewDlc);
         } else {
-            adapter = MyAdapter.ForGames(GameDataProvider.games, this::clickViewGame);
+            adapter = new CardAdapter(this, GameDataProvider.games, this::clickViewGame);
         }
         recyclerView.setAdapter(adapter);
         fabSave.setImageResource(dlcDirty ? android.R.drawable.ic_menu_save : android.R.drawable.ic_menu_revert);
@@ -267,7 +279,7 @@ public class ListActivity extends AppCompatActivity {
         finish();
     }
 
-    private void clickCancelDlcs(View v){
+    private void clickCancelDlcs(View v) {
         Intent intent = new Intent();
         currentGame.setDlcs(backupDlcs);
         setResult(RESULT_CANCELED, intent);
@@ -278,7 +290,7 @@ public class ListActivity extends AppCompatActivity {
 
     //when I click Back button instead of clicking custom button.
     public void onBackPressed() {
-        if (dlcMode&&dlcDirty) {
+        if (dlcMode && dlcDirty) {
             AlertDialog.Builder ab = new AlertDialog.Builder(this);
             ab.setTitle(getString(R.string.hint_title));
             ab.setMessage(getString(R.string.hint_cancelConfirm));

@@ -4,164 +4,158 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginHorizontal="8dp"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="gg.my.gamemanager.GameDetailActivity"
     tools:showIn="@layout/activity_detail"
-    android:layout_margin="8dp">
+    android:focusable="true"
+    android:focusableInTouchMode="true">
 
-    <ScrollView
+    <TextView
+        android:id="@+id/detail_name_label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/label_Name"
+        android:textSize="12pt"
+        app:layout_constraintBaseline_toBaselineOf="@+id/detail_name_edit"
+        app:layout_constraintRight_toLeftOf="@+id/detail_name_edit"
+        app:layout_constraintWidth_percent="0.25" />
+
+    <EditText
+        android:id="@+id/detail_name_edit"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="CS:GO"
+        android:textSize="12pt"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/detail_name_label"
+        app:layout_constraintWidth_percent="0.75" />
+
+
+    <TextView
+        android:id="@+id/detail_price_label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/label_Price"
+        android:textSize="8pt"
+        app:layout_constraintBaseline_toBaselineOf="@+id/detail_price_edit"
+        app:layout_constraintLeft_toRightOf="@id/detail_name_edit"
+        app:layout_constraintWidth_percent="0.25" />
+
+    <EditText
+        android:id="@+id/detail_price_edit"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:text="30"
+        android:textSize="8pt"
+        app:layout_constraintLeft_toRightOf="@+id/detail_price_label"
+        app:layout_constraintTop_toBottomOf="@+id/detail_name_edit"
+        app:layout_constraintWidth_percent="0.75" />
+
+
+    <TextView
+        android:id="@+id/detail_date_label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/label_Date"
+        android:textSize="8pt"
+        app:layout_constraintBaseline_toBaselineOf="@+id/detail_date_button"
+        app:layout_constraintRight_toLeftOf="@id/detail_date_button"
+        app:layout_constraintWidth_percent="0.25" />
+
+    <gg.my.gamemanager.control.DatePickButton
+        android:id="@+id/detail_date_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="2012-02-11"
+        android:textSize="8pt"
+        app:layout_constraintLeft_toRightOf="@+id/detail_date_label"
+        app:layout_constraintTop_toBottomOf="@+id/detail_name_edit"
+        app:layout_constraintWidth_percent="0.75" />
+
+
+    <TextView
+        android:id="@+id/detail_dlc_label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/label_DLC_s"
+        android:textSize="8pt"
+        app:layout_constraintRight_toLeftOf="@id/detail_dlc_button"
+        app:layout_constraintBaseline_toBaselineOf="@+id/detail_dlc_button"
+        app:layout_constraintWidth_percent="0.25" />
+
+    <Button
+        android:id="@+id/detail_dlc_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="3"
+        android:textSize="8pt"
+        app:layout_constraintLeft_toRightOf="@+id/detail_dlc_label"
+        app:layout_constraintTop_toBottomOf="@+id/detail_date_button"
+        app:layout_constraintWidth_percent="0.75" />
+
+
+    <View
+        android:id="@+id/detail_divider"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="3dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintTop_toBottomOf="@+id/detail_dlc_button" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            tools:ignore="MissingConstraints">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="4">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"
-                    android:text="@string/label_Name"
-                    android:textSize="12pt" />
-
-                <EditText
-                    android:id="@+id/detail_name_edit"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="CS:GOfftt"
-                    android:textSize="12pt" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="4">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"
-                    android:text="@string/label_Price"
-                    android:textSize="8pt" />
-
-                <EditText
-                    android:id="@+id/detail_price_edit"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:inputType="number"
-                    android:text="30"
-                    android:textSize="8pt" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="4">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"
-                    android:text="@string/label_Date"
-                    android:textSize="8pt" />
-
-                <Button
-                    android:id="@+id/detail_date_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="2012-02-11"
-                    android:textSize="8pt" />
-
-            </LinearLayout>
+    <TextView
+        android:id="@+id/detail_desc_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/label_Desc"
+        android:textSize="10pt"
+        app:layout_constraintTop_toBottomOf="@+id/detail_divider" />
 
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="4">
+    <EditText
+        android:id="@+id/detail_desc_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textMultiLine"
+        android:text="CS:GO is the latest version of the well-known FPS game Counter-Strike."
+        android:textSize="7pt"
+        app:layout_constraintTop_toBottomOf="@+id/detail_desc_label" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"
-                    android:text="@string/label_DLC_s"
-                    android:textSize="8pt" />
-
-                <Button
-                    android:id="@+id/detail_dlc_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="3"
-                    android:textSize="8pt" />
-
-            </LinearLayout>
-
-            <View
-                android:id="@+id/detail_divider"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="?android:attr/listDivider" />
-
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/label_Desc"
-                android:textSize="10pt" />
+    <gg.my.gamemanager.control.Voter
+        android:id="@+id/detail_voter"
+        android:layout_width="match_parent"
+        android:layout_height="96dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/detail_desc_edit" />
 
 
-            <EditText
-                android:id="@+id/detail_desc_edit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textMultiLine"
-                android:text="CS:GO is the latest version of the well-known FPS game Counter-Strike."
-                android:textSize="7pt" />
-
-            <View
-                android:id="@+id/divider2"
-                android:layout_width="match_parent"
-                android:layout_height="5dp"
-                android:background="?android:attr/listDivider" />
 
 
-            <EditText
-                android:id="@+id/detail_gamehour_edit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:ems="10"
-                android:hint="@string/gamehoursphint"
-                android:inputType="number" />
+    <EditText
+        android:id="@+id/detail_gamehour_edit"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:ems="10"
+        android:hint="@string/gamehoursphint"
+        android:inputType="number"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/detial_screenGamehours"
+        app:layout_constraintTop_toBottomOf="@+id/detail_voter" />
 
-            <TextView
-                android:id="@+id/detial_screenGamehours"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="aaaaaaaa"
-                android:textSize="24sp" />
-
-        </LinearLayout>
-    </ScrollView>
-
+    <TextView
+        android:id="@+id/detial_screenGamehours"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:text="aaaaaaaa"
+        android:textSize="24sp"
+        app:layout_constraintLeft_toRightOf="@id/detail_gamehour_edit"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBaseline_toBaselineOf="@id/detail_gamehour_edit" />
 
 </android.support.constraint.ConstraintLayout>

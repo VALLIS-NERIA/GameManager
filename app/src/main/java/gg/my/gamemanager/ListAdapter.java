@@ -17,7 +17,7 @@ import gg.my.gamemanager.models.Game;
  * Adapter for RecyclerView.
  * Use factory methods to create instances.
  */
-class MyAdapter extends RecyclerView.Adapter<MyAdapter.ItemView> {
+class ListAdapter extends RecyclerView.Adapter<ListAdapter.ItemView> {
     // a function delegate
     @FunctionalInterface
     public interface ItemClickListener {
@@ -30,8 +30,8 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ItemView> {
     private List<Game> games;
     private ItemClickListener callback;
 
-    public static MyAdapter ForGames(List<Game> games, ItemClickListener callback) {
-        MyAdapter a = new MyAdapter();
+    public static ListAdapter ForGames(List<Game> games, ItemClickListener callback) {
+        ListAdapter a = new ListAdapter();
         a.games = games;
         a.dlcs = null;
         a.callback = callback;
@@ -39,8 +39,8 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ItemView> {
         return a;
     }
 
-    public static MyAdapter ForDlcs(List<DlcInfo> dlcs, ItemClickListener callback) {
-        MyAdapter a = new MyAdapter();
+    public static ListAdapter ForDlcs(List<DlcInfo> dlcs, ItemClickListener callback) {
+        ListAdapter a = new ListAdapter();
         a.dlcs = dlcs;
         a.games = null;
         a.callback = callback;
@@ -48,7 +48,7 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ItemView> {
         return a;
     }
 
-    private MyAdapter() {
+    private ListAdapter() {
     }
 
     @Override
@@ -86,10 +86,10 @@ class MyAdapter extends RecyclerView.Adapter<MyAdapter.ItemView> {
         }
     }
 
-    // binds item.xml layout to ItemView
+    // binds list_item.xmlm.xml layout to ItemView
     @Override
     public ItemView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
         return new ItemView(v);
     }
 

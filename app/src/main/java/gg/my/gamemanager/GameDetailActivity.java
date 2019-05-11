@@ -116,7 +116,6 @@ public class GameDetailActivity extends AppCompatActivity {
         nameEdit.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
 
             @Override
@@ -126,7 +125,6 @@ public class GameDetailActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-
             }
         });
         screenHour.setText(getString(R.string.hours) + " " + String.format(loc, "%d", currentGame.getHours()) + " " + getString(R.string.Hours));
@@ -223,12 +221,10 @@ public class GameDetailActivity extends AppCompatActivity {
         }
 
         GameDataProvider.save();
-        this.editMode = false;
-        this.initViews();
-//        // return to ListActivity
-//        Intent intent = new Intent();
-//        setResult(RESULT_OK, intent);
-//        finish();
+        // return to ListActivity
+        Intent intent = new Intent();
+        setResult(RESULT_OK, intent);
+        finish();
     }
 
     //when I click Back button instead of clicking custom button.
@@ -258,6 +254,7 @@ public class GameDetailActivity extends AppCompatActivity {
         if (isNewGame) {
             Intent intent = new Intent();
             GameDataProvider.games.remove(gameIndex);
+            GameDataProvider.save();
             setResult(RESULT_DELETED, intent);
             finish();
         } else if (editMode) {
@@ -267,9 +264,6 @@ public class GameDetailActivity extends AppCompatActivity {
             this.initViews();
         } else {
             Intent intent = new Intent();
-
-            // revert all modifications
-            currentGame.loadFrom(backupGame);
             setResult(RESULT_CANCELED, intent);
             finish();
         }

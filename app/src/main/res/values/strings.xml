@@ -5,6 +5,7 @@
     <string name="label_Date">Date</string>
     <string name="label_Desc">Description</string>
     <string name="label_DLC_s">DLC(s)</string>
+    <string name="template_DLC">%d DLC(s)</string>
     <string name="title_listGame">Game List</string>
     <string name="title_template_gameDetail">Detail: "%s"</string>
     <string name="title_template_dlcDetail">DLC：%s</string>
@@ -27,6 +28,8 @@ Lead the daughter through what’s left of the mansion and take part in the madn
     <string name="default2_gameName">Counter Strike: Global Offensive</string>
     <string name="default2_gameDesc">Counter-Strike: Global Offensive (CS:GO) is a multiplayer first-person shooter video game developed by Hidden Path Entertainment and Valve Corporation. It is the fourth game in the Counter-Strike series and was released for Microsoft Windows, OS X, Xbox 360, and PlayStation 3 on August 21, 2012, while the Linux version was released in 2014.</string>
     <string name="hint_rateGame">What do you think of this game?</string>
+    <string name="label_userRating">User rating:\ </string>
+    <string name="rating_none">No rating yet</string>
     <string name="rating_good">Good</string>
     <string name="rating_soso">So-so</string>
     <string name="rating_bad">Bad</string>

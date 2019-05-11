@@ -15,7 +15,8 @@
         app:layout_constraintHeight_min="96dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_min="240dp">
+        app:layout_constraintWidth_min="240dp"
+        app:layout_constraintRight_toLeftOf="@+id/voter_right">
 
         <gg.my.gamemanager.control.DonutDrawView
             android:id="@+id/voter_donut"
@@ -41,19 +42,24 @@
         <RadioGroup
             android:id="@+id/voter_group"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintHorizontal_bias="0">
 
             <RadioButton
                 android:id="@+id/voter_set_hist"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="histogram" />
+                android:text="@string/chart_hist" />
 
             <RadioButton
                 android:id="@+id/voter_set_donut"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="donut" />
+                android:text="@string/chart_donut" />
         </RadioGroup>
 
         <android.support.design.widget.FloatingActionButton

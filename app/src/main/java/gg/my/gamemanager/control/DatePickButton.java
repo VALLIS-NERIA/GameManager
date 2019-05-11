@@ -10,7 +10,7 @@ import java.util.Calendar;
 
 import gg.my.gamemanager.GameDetailActivity;
 import gg.my.gamemanager.R;
-
+import gg.my.gamemanager.helpers.Utils;
 
 
 public class DatePickButton extends android.support.v7.widget.AppCompatButton {
@@ -28,7 +28,7 @@ public class DatePickButton extends android.support.v7.widget.AppCompatButton {
 
     public void setDate(Calendar date) {
         this.current = date;
-        this.setText(this.formatDate(this.current));
+        this.setText(Utils.formatDate(this.current));
     }
 
     public Calendar getDate() {
@@ -64,7 +64,5 @@ public class DatePickButton extends android.support.v7.widget.AppCompatButton {
         this.pickCallback.run(picked);
     }
 
-    private static String formatDate(Calendar date) {
-        return String.format("%d-%d-%d", date.get(Calendar.YEAR), date.get(Calendar.MONTH) + 1, date.get(Calendar.DAY_OF_MONTH));
-    }
+
 }

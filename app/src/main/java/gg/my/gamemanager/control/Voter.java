@@ -76,7 +76,6 @@ public class Voter extends android.support.constraint.ConstraintLayout {
         }
         this.hist.setData(data);
         this.donut.setData(data);
-        this.invalidate();
         this.hist.invalidate();
         this.donut.invalidate();
     }
